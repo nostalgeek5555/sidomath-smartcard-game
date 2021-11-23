@@ -1,0 +1,9 @@
+SidomathSmartCards/Library/
+SidomathSmartCards/Temp/
+SidomathSmartCards/UserSettings/
+SidomathSmartCards/Logs/
+SidomathSmartCards/obj/
+*.vsconfig
+*.sln
+SidomathSmartCards/.vs/SidomathSmartCards/v16/.suo
+*.csproj
