@@ -19,6 +19,7 @@ public class Card : MonoBehaviour
 
     [Header("Card Contents")]
     public Image cardImage;
+    public CanvasGroup canvasGroup;
     public Animator animator;
 
 

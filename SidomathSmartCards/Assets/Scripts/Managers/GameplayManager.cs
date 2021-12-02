@@ -15,6 +15,7 @@ public class GameplayManager : MonoBehaviour
     public Player player;
     public int totalEnemy;
     public GameObject cardPrefab;
+    public Card cardSpawnedPrefab;
     public GameObject aiDeckHolderPrefab;
     public Transform dealerDeckHolder;
 
@@ -23,11 +24,10 @@ public class GameplayManager : MonoBehaviour
     public string levelName;
     public List<Card> mainDecks = new List<Card>();
     public List<Transform> deckHolders = new List<Transform>();
-    
-    
 
     [Header("State Controller")]
-    public bool gameover;
+    public bool gamestart = false;
+    public bool gameover = false;
 
     private void Start()
     {
@@ -121,11 +121,10 @@ public class GameplayManager : MonoBehaviour
     public void DistributeCards(List<Card> cards, int cardID, int deckHolderID)
     {
         Debug.Log("distribute cards");
-        if (cardID < cards.Count)
-        {
-            Card card = cards[cardID];
-            //cards.RemoveAt(cardID);
+        Card card = cards[cardID];
 
+        if (cardID < cards.Count - 1)
+        {
             //distribute to each deck holder start from player
             if (deckHolderID < deckHolders.Count)
             {
@@ -161,7 +160,46 @@ public class GameplayManager : MonoBehaviour
 
         else
         {
-            cards.Clear();
+            //pick random tile on board and place last card from dealer deck as initiator
+            int randX = Random.Range(2, BoardManager.Instance.tilesOnBoards.GetLength(0) - 3);
+            int randY = Random.Range(2, BoardManager.Instance.tilesOnBoards.GetUpperBound(1) - 3);
+            Tile pickedTile = BoardManager.Instance.tilesOnBoards[randX, randY];
+            pickedTile.droppedCard = card;
+            pickedTile._placed = true;
+            pickedTile._droppable = false;
+
+            //pick random position on tiles
+            int randomPos = Random.Range(0, pickedTile.tilePoints.Count - 1);
+            Transform point = pickedTile.tilePoints[randomPos];
+
+            //spawn card on picked tile
+            Card spawnedCard = LeanPool.Spawn(cardSpawnedPrefab, point.transform);
+            spawnedCard.InitCard(card._cardId, card._cardPairType, card.cardImage.sprite);
+            spawnedCard.canvasGroup.alpha = 0;
+            RectTransform rectCard = card.gameObject.transform.GetComponent<RectTransform>();
+            RectTransform rectSpawnedCard = spawnedCard.gameObject.transform.GetComponent<RectTransform>();
+
+
+            if (randomPos == 0 || randomPos == 1)
+            {
+                spawnedCard.transform.localRotation = Quaternion.Euler(0,0,90);
+            }
+
+            //drop last card to randomly picked tile on board
+            Sequence sequence = DOTween.Sequence();
+            sequence.AppendInterval(0.5f);
+            sequence.Append(card.gameObject.transform.DOMove(point.position, 0.6f, false));
+            sequence.Join(rectCard.DOSizeDelta(rectSpawnedCard.sizeDelta, 0.6f, false));
+            sequence.Join(card.gameObject.transform.DORotate(spawnedCard.gameObject.transform.eulerAngles, 0.6f));
+            sequence.AppendCallback(() =>
+            {
+                LeanPool.Despawn(card);
+                mainDecks.Remove(card);
+                spawnedCard.canvasGroup.alpha = 1;
+                spawnedCard.transform.SetParent(pickedTile.transform);
+                gamestart = true;
+                Debug.Log($"current card id :: {cardID}");
+            });
         }
     }
 }

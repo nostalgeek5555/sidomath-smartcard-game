@@ -8,11 +8,13 @@ public class BoardManager : MonoBehaviour
 {
     public static BoardManager Instance;
 
+    public Transform boardParent;
     public Transform topLeftPoint;
     public Transform bottomLeftPoint;
     public Transform topRightPoint;
     public Tile tilePrefab;
     public List<Tile> tilesOnBoard;
+    public Tile[,] tilesOnBoards;
     [SerializeField] private int width, height;
 
     void Start()
@@ -36,26 +38,29 @@ public class BoardManager : MonoBehaviour
     private void GenerateBoard(Vector3 _pointA, Vector3 _pointB, Vector3 _pointC)
     {
         tilesOnBoard = new List<Tile>();
-        GameObject container = new GameObject();
-        container.name = "Board Container";
-        container.transform.position = _pointC;
-        float spriteWidth = Vector3.Distance(_pointA, _pointB) / width;
-        float spriteHeight = Vector3.Distance(_pointA, _pointC) / height;
+        tilesOnBoards = new Tile[width, height];
+
+        //GameObject container = new GameObject();
+        //GameObject boardContainer = LeanPool.Spawn(new GameObject(), boardParent);
+        //boardContainer.name = "Board Container";
+        //boardContainer.transform.position = _pointC;
+        //float spriteWidth = Vector3.Distance(_pointA, _pointB) / width;
+        //float spriteHeight = Vector3.Distance(_pointA, _pointC) / height;
 
         for (int x = 0; x < width; x++)
         {
             for (int y = 0; y < height; y++)
             {
-                Tile tile = LeanPool.Spawn(tilePrefab, container.transform.position, Quaternion.identity);
-                tile.transform.parent = container.transform;
-                tile.transform.localPosition = new Vector3(x * spriteWidth, y * spriteHeight, -1);
-                tile.transform.localScale = new Vector3(spriteWidth, spriteHeight, 1);
+                Tile tile = LeanPool.Spawn(tilePrefab, boardParent);
+                //tile.transform.localPosition = new Vector3(x * spriteWidth, y * spriteHeight, -1);
+                //tile.transform.localScale = new Vector3(spriteWidth, spriteHeight, 1);
 
                 tilesOnBoard.Add(tile);
-
+                tilesOnBoards[x, y] = tile;
             }
         }
     }
+
 
     private void OnDrawGizmos()
     {
@@ -68,4 +73,6 @@ public class BoardManager : MonoBehaviour
             }
         }
     }
+
+
 }
