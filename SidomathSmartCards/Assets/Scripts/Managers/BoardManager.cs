@@ -17,6 +17,10 @@ public class BoardManager : MonoBehaviour
     public Tile[,] tilesOnBoards;
     [SerializeField] private int width, height;
 
+    //card properties on board
+    public Card mostLeftCard = null;
+    public Card mostRightCard = null;
+
     void Start()
     {
         if (Instance == null)

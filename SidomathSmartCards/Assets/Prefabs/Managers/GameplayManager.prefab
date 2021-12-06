@@ -43,18 +43,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 58388c25660efff419ef0b9baf0150b5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  playerGO: {fileID: 0}
+  enemyGO: {fileID: 0}
+  playerPanelParent: {fileID: 0}
+  aiPanelParent: {fileID: 0}
   player: {fileID: 0}
   totalEnemy: 0
+  allPlayers: []
   cardPrefab: {fileID: 8912311863563262375, guid: e7138296ead12274c8d935e3db10384a, type: 3}
   cardSpawnedPrefab: {fileID: 8588623442856330343, guid: 3472b77e37c256946a1f1983c8760c62, type: 3}
-  aiDeckHolderPrefab: {fileID: 0}
   dealerDeckHolder: {fileID: 0}
+  currentGameMode: {fileID: 0}
   levelID: 0
   levelName: 
   mainDecks: []
-  deckHolders:
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
+  deckHolders: []
+  gamestart: 0
   gameover: 0

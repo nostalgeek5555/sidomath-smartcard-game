@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using Lean.Pool;
 using DG.Tweening;
-using NaughtyAttributes;
 using System.Linq;
 using Random = UnityEngine.Random;
 
@@ -12,17 +11,24 @@ public class GameplayManager : MonoBehaviour
 {
     public static GameplayManager Instance;
 
+    public GameObject playerGO;
+    public GameObject enemyGO;
+    public Transform playerPanelParent;
+    public Transform aiPanelParent;
     public Player player;
     public int totalEnemy;
     public GameObject cardPrefab;
     public Card cardSpawnedPrefab;
-    public GameObject aiDeckHolderPrefab;
     public Transform dealerDeckHolder;
+
+    [Header("Game Mode Properties")]
+    public ModeSO currentGameMode;
 
     [Header("Level Properties")]
     public int levelID;
     public string levelName;
     public List<Card> mainDecks = new List<Card>();
+    public List<Player> allPlayers = new List<Player>();
     public List<Transform> deckHolders = new List<Transform>();
 
     [Header("State Controller")]
@@ -46,11 +52,57 @@ public class GameplayManager : MonoBehaviour
 
         if (DataManager.Instance != null)
         {
-            StartCoroutine(InitGameplay(DataManager.Instance.levelTable["0|kakatua"]));
+            currentGameMode = DataManager.Instance.gameModeTable["Offline|SinglePlayer"];
+            InitGameMode(currentGameMode);
+            StartCoroutine(InitLevel(DataManager.Instance.levelTable["0|kakatua"]));
         }
     }
 
-    public IEnumerator InitGameplay(LevelSO levelSO)
+    public void InitGameMode(ModeSO modeSO)
+    {
+        allPlayers = new List<Player>();
+        deckHolders = new List<Transform>();
+        playerGO = modeSO.playerGO;
+        enemyGO = modeSO.enemyAiGO;
+
+        switch (modeSO.modeType)
+        {
+            case ModeSO.ModeType.Offline:
+                switch (modeSO.playerModeType)
+                {
+                    case ModeSO.PlayerModeType.SinglePlayer:
+                        GameObject _playerGo = LeanPool.Spawn(playerGO, playerPanelParent);
+                        Player player = _playerGo.GetComponent<Player>();
+                        RectTransform rect = _playerGo.GetComponent<RectTransform>();
+                        rect.offsetMax = new Vector2(0, 0);
+                        rect.offsetMin = new Vector2(0, 0);
+                        allPlayers.Add(player);
+                        deckHolders.Add(_playerGo.transform);
+
+                        for (int i = 0; i < modeSO.totalEnemyAI; i++)
+                        {
+                            GameObject _aiGo = LeanPool.Spawn(enemyGO, aiPanelParent);
+                            Player ai = _aiGo.GetComponent<Player>();
+                            allPlayers.Add(ai);
+                            deckHolders.Add(_aiGo.transform);
+                        }
+
+                        break;
+                    case ModeSO.PlayerModeType.Multiplayer:
+                        break;
+                    default:
+                        break;
+                }
+
+                break;
+            case ModeSO.ModeType.Online:
+                break;
+            default:
+                break;
+        }
+    }
+
+    public IEnumerator InitLevel(LevelSO levelSO)
     {
         bool allCardSpawned = false;
 
@@ -133,6 +185,7 @@ public class GameplayManager : MonoBehaviour
                 sequence.AppendCallback(() =>
                 {
                     card.gameObject.transform.SetParent(deckHolders[deckHolderID]);
+                    card._cardId = card.transform.GetSiblingIndex();
                     cardID++;
                     deckHolderID++;
 
@@ -149,6 +202,7 @@ public class GameplayManager : MonoBehaviour
                 sequence.AppendCallback(() =>
                 {
                     card.gameObject.transform.SetParent(deckHolders[deckHolderID]);
+                    card._cardId = card.transform.GetSiblingIndex();
                     cardID++;
                     deckHolderID++;
 
@@ -174,6 +228,7 @@ public class GameplayManager : MonoBehaviour
 
             //spawn card on picked tile
             Card spawnedCard = LeanPool.Spawn(cardSpawnedPrefab, point.transform);
+            spawnedCard.onHand = false;
             spawnedCard.InitCard(card._cardId, card._cardPairType, card.cardImage.sprite);
             spawnedCard.canvasGroup.alpha = 0;
             RectTransform rectCard = card.gameObject.transform.GetComponent<RectTransform>();
@@ -198,8 +253,27 @@ public class GameplayManager : MonoBehaviour
                 spawnedCard.canvasGroup.alpha = 1;
                 spawnedCard.transform.SetParent(pickedTile.transform);
                 gamestart = true;
+                SetupAllPlayers();
                 Debug.Log($"current card id :: {cardID}");
             });
+        }
+    }
+
+    public void SetupAllPlayers()
+    {
+        if (gamestart)
+        {
+            if (allPlayers.Count > 0)
+            {
+                for (int i = 0; i < allPlayers.Count; i++)
+                {
+                    Player player = allPlayers[i];
+                    player.RegisterHandCards();
+                    Debug.Log($"Register card for player :: {i + 1}");
+                }
+            }
+
+            player.PickCard(player.handCards[player.handCards.Count - 1]);
         }
     }
 }

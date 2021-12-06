@@ -8,10 +8,13 @@ public class DataManager : MonoBehaviour
 {
     public static DataManager Instance;
 
+    public List<ModeSO> gameModeList;
+    public Dictionary<string, ModeSO> gameModeTable;
     public List<LevelSO> levelList;
     public Dictionary<string, LevelSO> levelTable;
 
     //for viewing in editor
+    public List<string> gameModeAddedKeys = new List<string>();
     public List<string> levelAddedKeys = new List<string>();
     public List<LevelSO.CardData> levelCardDatas = new List<LevelSO.CardData>();
 
@@ -31,6 +34,21 @@ public class DataManager : MonoBehaviour
         }
 
         LoadResources();
+        LoadMode();
+    }
+
+    public void LoadMode()
+    {
+        gameModeList = new List<ModeSO>(Resources.LoadAll<ModeSO>("Scriptable Object/Mode"));
+        gameModeTable = new Dictionary<string, ModeSO>();
+
+        for (int i = 0; i < gameModeList.Count; i++)
+        {
+            ModeSO modeSO = gameModeList[i];
+            string key = modeSO.modeType.ToString() + "|" + modeSO.playerModeType.ToString();
+
+            gameModeTable.Add(key, modeSO);
+        }
     }
 
     private void LoadResources()
@@ -56,6 +74,7 @@ public class DataManager : MonoBehaviour
 
       if (levelTable.Count > 0)
         {
+            gameModeAddedKeys = gameModeTable.Keys.ToList();
             levelAddedKeys = levelTable.Keys.ToList();
             levelCardDatas = levelTable.Values.SelectMany(val => val.cardDatas).ToList();
         }  
