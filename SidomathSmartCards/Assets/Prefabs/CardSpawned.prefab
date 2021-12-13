@@ -66,7 +66,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 0}
+  m_Sprite: {fileID: 21300000, guid: e765806030b87bf41bd7b81b56504f4c, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -127,13 +127,25 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4dac96d8863c8af40a919aaec7740c44, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  cardType: 0
+  droppedPoint: 0
+  topBottomSpecific: 0
+  matchedSide: 0
   cardId: 0
   cardPairType: 
+  orderIndex: 0
+  onHand: 1
+  picked: 0
+  dropped: 0
   matched: 0
   flipped: 0
+  cardButton: {fileID: 0}
+  cardHighlight: {fileID: 0}
+  overrideCanvas: {fileID: 0}
   cardImage: {fileID: 2643812752014266035}
   canvasGroup: {fileID: 1605071155569826666}
   animator: {fileID: 2263187923322369737}
+  player: {fileID: 0}
 --- !u!95 &2263187923322369737
 Animator:
   serializedVersion: 3
@@ -231,7 +243,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 0}
+  m_Sprite: {fileID: 21300000, guid: e765806030b87bf41bd7b81b56504f4c, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -276,7 +288,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 86, y: 86}
+  m_SizeDelta: {x: 82, y: 82}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &953429601197910514
 CanvasRenderer:

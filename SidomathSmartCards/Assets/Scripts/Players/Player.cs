@@ -40,8 +40,11 @@ public class Player : MonoBehaviour
 
     public void RegisterHandCards()
     {
-        handCardFitter.enabled = false;
-        handGroup.enabled = false;
+        if (playerType == PlayerType.Player)
+        {
+            handCardFitter.enabled = false;
+            handGroup.enabled = false;
+        }
         handCards = new List<Card>();
         if (transform.childCount > 0)
         {
@@ -84,6 +87,7 @@ public class Player : MonoBehaviour
 
     public virtual void PickCard(Card card)
     {
+        Debug.Log($"pick card on hand :: {card.cardType.ToString()}");
         pickedCard = card;
         pickedCard.picked = true;
         pickedCard.cardHighlight.SetActive(true);

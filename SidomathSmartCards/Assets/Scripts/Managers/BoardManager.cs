@@ -1,9 +1,11 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using NaughtyAttributes;
 using Lean.Pool;
 
+[Serializable]
 public class BoardManager : MonoBehaviour
 {
     public static BoardManager Instance;
@@ -15,12 +17,18 @@ public class BoardManager : MonoBehaviour
     public Tile tilePrefab;
     public List<Tile> tilesOnBoard;
     public Tile[,] tilesOnBoards;
+    public TileData[] tileDatas;
     [SerializeField] private int width, height;
 
-    //card properties on board
+    //card properties on board 
+    public List<Tile> droppedTile = new List<Tile>();
     public Card mostLeftCard = null;
     public Card mostRightCard = null;
 
+    public event Action OnCardDropped;
+    public event Action OnCardMatch;
+
+    
     void Start()
     {
         if (Instance == null)
@@ -43,6 +51,8 @@ public class BoardManager : MonoBehaviour
     {
         tilesOnBoard = new List<Tile>();
         tilesOnBoards = new Tile[width, height];
+        tileDatas = new TileData[width];
+        
 
         //GameObject container = new GameObject();
         //GameObject boardContainer = LeanPool.Spawn(new GameObject(), boardParent);
@@ -51,17 +61,41 @@ public class BoardManager : MonoBehaviour
         //float spriteWidth = Vector3.Distance(_pointA, _pointB) / width;
         //float spriteHeight = Vector3.Distance(_pointA, _pointC) / height;
 
-        for (int x = 0; x < width; x++)
+        for (int x = 0; x < tileDatas.Length; x++)
         {
-            for (int y = 0; y < height; y++)
+            tileDatas[x].tiles = new Tile[height];
+
+            for (int y = 0; y < tileDatas[x].tiles.Length; y++)
             {
                 Tile tile = LeanPool.Spawn(tilePrefab, boardParent);
+                string tileId = x + "|" + y;
+                tile.InitTile(tileId);
                 //tile.transform.localPosition = new Vector3(x * spriteWidth, y * spriteHeight, -1);
                 //tile.transform.localScale = new Vector3(spriteWidth, spriteHeight, 1);
 
                 tilesOnBoard.Add(tile);
                 tilesOnBoards[x, y] = tile;
+                tileDatas[x].tiles[y] = tile;
+                //Debug.Log($"Tiles on board {x} {y} :: {tilesOnBoards[x, y]._tileIndex}");
             }
+        }
+    }
+
+    public void RecordBoard()
+    {
+
+    }
+
+    public void CheckBoard()
+    {
+        if (droppedTile.Count <= 1)
+        {
+
+        }
+
+        else
+        {
+
         }
     }
 
@@ -78,5 +112,10 @@ public class BoardManager : MonoBehaviour
         }
     }
 
+    [Serializable]
+    public struct TileData
+    {
+        public Tile[] tiles;
+    }
 
 }

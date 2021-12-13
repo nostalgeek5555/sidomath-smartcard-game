@@ -72,7 +72,7 @@ public class GameplayManager : MonoBehaviour
                 {
                     case ModeSO.PlayerModeType.SinglePlayer:
                         GameObject _playerGo = LeanPool.Spawn(playerGO, playerPanelParent);
-                        Player player = _playerGo.GetComponent<Player>();
+                        player = _playerGo.GetComponent<Player>();
                         RectTransform rect = _playerGo.GetComponent<RectTransform>();
                         rect.offsetMax = new Vector2(0, 0);
                         rect.offsetMin = new Vector2(0, 0);
@@ -181,7 +181,7 @@ public class GameplayManager : MonoBehaviour
             if (deckHolderID < deckHolders.Count)
             {
                 Sequence sequence = DOTween.Sequence();
-                sequence.Append(card.gameObject.transform.DOMove(deckHolders[deckHolderID].position, 0.3f, false));
+                sequence.Append(card.gameObject.transform.DOMove(deckHolders[deckHolderID].position, 0.1f, false));
                 sequence.AppendCallback(() =>
                 {
                     card.gameObject.transform.SetParent(deckHolders[deckHolderID]);
@@ -198,7 +198,7 @@ public class GameplayManager : MonoBehaviour
             {
                 deckHolderID = 0;
                 Sequence sequence = DOTween.Sequence();
-                sequence.Append(card.gameObject.transform.DOMove(deckHolders[deckHolderID].position, 0.3f, false));
+                sequence.Append(card.gameObject.transform.DOMove(deckHolders[deckHolderID].position, 0.1f, false));
                 sequence.AppendCallback(() =>
                 {
                     card.gameObject.transform.SetParent(deckHolders[deckHolderID]);
@@ -226,54 +226,115 @@ public class GameplayManager : MonoBehaviour
             int randomPos = Random.Range(0, pickedTile.tilePoints.Count - 1);
             Transform point = pickedTile.tilePoints[randomPos];
 
-            //spawn card on picked tile
-            Card spawnedCard = LeanPool.Spawn(cardSpawnedPrefab, point.transform);
-            spawnedCard.onHand = false;
-            spawnedCard.InitCard(card._cardId, card._cardPairType, card.cardImage.sprite);
-            spawnedCard.canvasGroup.alpha = 0;
-            RectTransform rectCard = card.gameObject.transform.GetComponent<RectTransform>();
-            RectTransform rectSpawnedCard = spawnedCard.gameObject.transform.GetComponent<RectTransform>();
-
-
-            if (randomPos == 0 || randomPos == 1)
+            //spawn card on picked tile and drop last card from dealer deck as initiator
+            Card spawnedCard;
+            switch (randomPos)
             {
-                spawnedCard.transform.localRotation = Quaternion.Euler(0,0,90);
+                case 0:
+                    spawnedCard = SpawnCardOnBoard(card, point, Tile.DroppedPoint.Top, Tile.TopBottomSpecific.Mid);
+                    MoveCardToBoard(card, spawnedCard, point, 0.6f, SetupAllPlayers());
+                    break;
+
+                case 1:
+                    spawnedCard = SpawnCardOnBoard(card, point, Tile.DroppedPoint.Bottom, Tile.TopBottomSpecific.Mid);
+                    MoveCardToBoard(card, spawnedCard, point, 0.6f, SetupAllPlayers());
+                    break;
+
+                case 2:
+                    spawnedCard = SpawnCardOnBoard(card, point, Tile.DroppedPoint.Left, Tile.TopBottomSpecific.Mid);
+                    MoveCardToBoard(card, spawnedCard, point, 0.6f, SetupAllPlayers());
+                    break;
+
+                case 3:
+                    spawnedCard = SpawnCardOnBoard(card, point, Tile.DroppedPoint.Right, Tile.TopBottomSpecific.Mid);
+                    MoveCardToBoard(card, spawnedCard, point, 0.6f, SetupAllPlayers());
+                    break;
+
+                default:
+                    break;
             }
-
-            //drop last card to randomly picked tile on board
-            Sequence sequence = DOTween.Sequence();
-            sequence.AppendInterval(0.5f);
-            sequence.Append(card.gameObject.transform.DOMove(point.position, 0.6f, false));
-            sequence.Join(rectCard.DOSizeDelta(rectSpawnedCard.sizeDelta, 0.6f, false));
-            sequence.Join(card.gameObject.transform.DORotate(spawnedCard.gameObject.transform.eulerAngles, 0.6f));
-            sequence.AppendCallback(() =>
-            {
-                LeanPool.Despawn(card);
-                mainDecks.Remove(card);
-                spawnedCard.canvasGroup.alpha = 1;
-                spawnedCard.transform.SetParent(pickedTile.transform);
-                gamestart = true;
-                SetupAllPlayers();
-                Debug.Log($"current card id :: {cardID}");
-            });
         }
     }
 
-    public void SetupAllPlayers()
+    //spawn picked card on board
+    public Card SpawnCardOnBoard(Card card, Transform tileParent, Tile.DroppedPoint droppedPoint, Tile.TopBottomSpecific topBottomSpecific)
     {
-        if (gamestart)
+        Card spawnedCard = LeanPool.Spawn(cardSpawnedPrefab, tileParent.transform);
+        spawnedCard.cardType = Card.CardType.OnBoard;
+        spawnedCard._cardId = card._cardId;
+        spawnedCard._cardPairType = card._cardPairType;
+        spawnedCard.cardImage = card.cardImage;
+        spawnedCard.onHand = false;
+        spawnedCard.dropped = true;
+        spawnedCard.flipped = false;
+        spawnedCard.droppedPoint = droppedPoint;
+        spawnedCard.topBottomSpecific = topBottomSpecific;
+        spawnedCard.canvasGroup.alpha = 0;
+
+        switch (droppedPoint)
         {
-            if (allPlayers.Count > 0)
+            case Tile.DroppedPoint.Top:
+                spawnedCard.transform.localRotation = Quaternion.Euler(0, 0, 90);
+                break;
+            case Tile.DroppedPoint.Bottom:
+                spawnedCard.transform.localRotation = Quaternion.Euler(0, 0, 90);
+                break;
+            case Tile.DroppedPoint.Left:
+                break;
+            case Tile.DroppedPoint.Right:
+                break;
+            default:
+                break;
+        }
+
+        return spawnedCard;
+    }
+
+    public void MoveCardToBoard(Card card, Card spawnedCard, Transform targetPos, float moveDuration, /*Action action = null,*/ IEnumerator enumerator = null)
+    {
+        RectTransform cardRect = card.GetComponent<RectTransform>();
+        RectTransform targetRect = spawnedCard.GetComponent<RectTransform>();
+
+        Sequence sequence = DOTween.Sequence();
+        sequence.AppendInterval(0.3f);
+        sequence.Append(card.gameObject.transform.DOMove(targetPos.position, moveDuration, false));
+        sequence.Join(cardRect.DOSizeDelta(targetRect.sizeDelta, moveDuration, false));
+        sequence.Join(card.gameObject.transform.DORotate(spawnedCard.gameObject.transform.eulerAngles, moveDuration));
+        sequence.AppendCallback(() =>
+        {
+            LeanPool.Despawn(card);
+            mainDecks.Remove(card);
+            spawnedCard.canvasGroup.alpha = 1;
+            spawnedCard.transform.SetParent(targetPos.GetComponentInParent<Transform>());
+            StartCoroutine(enumerator);
+            //action?.Invoke();
+        });
+
+        
+    }
+
+    public IEnumerator SetupAllPlayers()
+    {
+        Debug.Log("setup all player");
+        if (allPlayers.Count > 0)
+        {
+            for (int i = 0; i < allPlayers.Count; i++)
             {
-                for (int i = 0; i < allPlayers.Count; i++)
+                Player player = allPlayers[i];
+                player.RegisterHandCards();
+                Debug.Log($"Register card for player :: {i + 1}");
+
+                if (i == allPlayers.Count - 1)
                 {
-                    Player player = allPlayers[i];
-                    player.RegisterHandCards();
-                    Debug.Log($"Register card for player :: {i + 1}");
+                    gamestart = true;
+                    Debug.Log($"all player setup done, gamestart == {gamestart}");
+                    break;
                 }
             }
-
-            player.PickCard(player.handCards[player.handCards.Count - 1]);
         }
+
+        yield return new WaitUntil(() => gamestart == true);
+
+        player.PickCard(player.handCards[player.handCards.Count - 1]);
     }
 }

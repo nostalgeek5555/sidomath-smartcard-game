@@ -65,7 +65,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 0}
+  m_Sprite: {fileID: 21300000, guid: e765806030b87bf41bd7b81b56504f4c, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -202,7 +202,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0.50279653, g: 1, b: 0.033018887, a: 1}
+  m_Color: {r: 1, g: 0.99653727, b: 0.031372547, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -568,6 +568,7 @@ GameObject:
   - component: {fileID: 778451029231284027}
   - component: {fileID: 7483339699890320546}
   - component: {fileID: 40701968366805592}
+  - component: {fileID: 786005628119847570}
   m_Layer: 5
   m_Name: Card
   m_TagString: Untagged
@@ -595,7 +596,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 160, y: 220}
+  m_SizeDelta: {x: 128, y: 200}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &9095113435819443770
 MonoBehaviour:
@@ -610,11 +611,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   cardType: 0
+  droppedPoint: 0
+  topBottomSpecific: 0
+  matchedSide: 0
   cardId: 0
   cardPairType: 
   orderIndex: 0
   onHand: 1
   picked: 0
+  dropped: 0
   matched: 0
   flipped: 0
   cardButton: {fileID: 778451029231284027}
@@ -624,6 +629,9 @@ MonoBehaviour:
   canvasGroup: {fileID: 0}
   animator: {fileID: 549766408472819103}
   player: {fileID: 0}
+  layoutElement: {fileID: 786005628119847570}
+  originParent: {fileID: 0}
+  placeholderParent: {fileID: 0}
 --- !u!95 &549766408472819103
 Animator:
   serializedVersion: 3
@@ -725,6 +733,26 @@ MonoBehaviour:
   m_BlockingMask:
     serializedVersion: 2
     m_Bits: 4294967295
+--- !u!114 &786005628119847570
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8912311863563262375}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 306cc8c2b49d7114eaa3623786fc2126, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_IgnoreLayout: 0
+  m_MinWidth: -1
+  m_MinHeight: -1
+  m_PreferredWidth: 128
+  m_PreferredHeight: 200
+  m_FlexibleWidth: -1
+  m_FlexibleHeight: -1
+  m_LayoutPriority: 1
 --- !u!1 &9151943962299680207
 GameObject:
   m_ObjectHideFlags: 0
