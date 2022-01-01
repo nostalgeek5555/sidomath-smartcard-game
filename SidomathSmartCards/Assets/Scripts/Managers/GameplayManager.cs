@@ -19,10 +19,13 @@ public class GameplayManager : MonoBehaviour
     public int totalEnemy;
     public GameObject cardPrefab;
     public Card cardSpawnedPrefab;
+    public GameObject cardConnectorPrefab;
     public Transform dealerDeckHolder;
 
     [Header("Game Mode Properties")]
     public ModeSO currentGameMode;
+    public TurnCycle turnCycle;
+    public int currentPlayerTurnID;
 
     [Header("Level Properties")]
     public int levelID;
@@ -58,6 +61,7 @@ public class GameplayManager : MonoBehaviour
         }
     }
 
+    //first time load gameplay
     public void InitGameMode(ModeSO modeSO)
     {
         allPlayers = new List<Player>();
@@ -65,6 +69,13 @@ public class GameplayManager : MonoBehaviour
         playerGO = modeSO.playerGO;
         enemyGO = modeSO.enemyAiGO;
 
+        //set turn clockwise or counter clockwise
+        Array values = Enum.GetValues(typeof(TurnCycle));
+        turnCycle = (TurnCycle)values.GetValue(Random.Range(0, values.Length));
+        Debug.Log($"Turn cycle type = {turnCycle}");
+
+
+        //set gamemode from loaded scriptable object
         switch (modeSO.modeType)
         {
             case ModeSO.ModeType.Offline:
@@ -86,6 +97,24 @@ public class GameplayManager : MonoBehaviour
                             allPlayers.Add(ai);
                             deckHolders.Add(_aiGo.transform);
                         }
+
+                        //set current turn id for main player
+                        switch (turnCycle)
+                        {
+                            case TurnCycle.CLOCKWISE:
+                                currentPlayerTurnID = allPlayers.IndexOf(player);
+                                Debug.Log($"main player turn id == {currentPlayerTurnID}");
+                                break;
+                            case TurnCycle.COUNTER_CLOCKWISE:
+                                allPlayers.Reverse();
+                                currentPlayerTurnID = allPlayers.IndexOf(player);
+                                Debug.Log($"main player turn id == {currentPlayerTurnID}");
+                                break;
+                            default:
+                                break;
+                        }
+                        
+                        
 
                         break;
                     case ModeSO.PlayerModeType.Multiplayer:
@@ -231,23 +260,23 @@ public class GameplayManager : MonoBehaviour
             switch (randomPos)
             {
                 case 0:
-                    spawnedCard = SpawnCardOnBoard(card, point, Tile.DroppedPoint.Top, Tile.TopBottomSpecific.Mid);
-                    MoveCardToBoard(card, spawnedCard, point, 0.6f, SetupAllPlayers());
+                    spawnedCard = SpawnCardOnBoard(card, pickedTile, point, Tile.DroppedPoint.Top, Tile.TopBottomSpecific.Mid, null, null);
+                    MoveCardToBoard(card, spawnedCard, point, 0.6f, BoardManager.Instance.ResetDroppableAreas, SetupAllPlayers());
                     break;
 
                 case 1:
-                    spawnedCard = SpawnCardOnBoard(card, point, Tile.DroppedPoint.Bottom, Tile.TopBottomSpecific.Mid);
-                    MoveCardToBoard(card, spawnedCard, point, 0.6f, SetupAllPlayers());
+                    spawnedCard = SpawnCardOnBoard(card, pickedTile, point, Tile.DroppedPoint.Bottom, Tile.TopBottomSpecific.Mid, null, null);
+                    MoveCardToBoard(card, spawnedCard, point, 0.6f, BoardManager.Instance.ResetDroppableAreas, SetupAllPlayers());
                     break;
 
                 case 2:
-                    spawnedCard = SpawnCardOnBoard(card, point, Tile.DroppedPoint.Left, Tile.TopBottomSpecific.Mid);
-                    MoveCardToBoard(card, spawnedCard, point, 0.6f, SetupAllPlayers());
+                    spawnedCard = SpawnCardOnBoard(card, pickedTile, point, Tile.DroppedPoint.Right, Tile.TopBottomSpecific.Mid, null, null);
+                    MoveCardToBoard(card, spawnedCard, point, 0.6f, BoardManager.Instance.ResetDroppableAreas, SetupAllPlayers());
                     break;
 
                 case 3:
-                    spawnedCard = SpawnCardOnBoard(card, point, Tile.DroppedPoint.Right, Tile.TopBottomSpecific.Mid);
-                    MoveCardToBoard(card, spawnedCard, point, 0.6f, SetupAllPlayers());
+                    spawnedCard = SpawnCardOnBoard(card, pickedTile, point, Tile.DroppedPoint.Left, Tile.TopBottomSpecific.Mid, null, null);
+                    MoveCardToBoard(card, spawnedCard, point, 0.6f, BoardManager.Instance.ResetDroppableAreas, SetupAllPlayers());
                     break;
 
                 default:
@@ -257,31 +286,54 @@ public class GameplayManager : MonoBehaviour
     }
 
     //spawn picked card on board
-    public Card SpawnCardOnBoard(Card card, Transform tileParent, Tile.DroppedPoint droppedPoint, Tile.TopBottomSpecific topBottomSpecific)
+    public Card SpawnCardOnBoard(Card card, Tile tile, Transform transformParent, Tile.DroppedPoint droppedPoint, Tile.TopBottomSpecific topBottomSpecific, Action<Card, Card, Card> action = null, CardConnector _cardConnector = null, Card pairingCard = null)
     {
-        Card spawnedCard = LeanPool.Spawn(cardSpawnedPrefab, tileParent.transform);
+        Card spawnedCard = LeanPool.Spawn(cardSpawnedPrefab, transformParent);
+        GameObject cardConnector = LeanPool.Spawn(cardConnectorPrefab, spawnedCard.transform);
+        
         spawnedCard.cardType = Card.CardType.OnBoard;
+        spawnedCard.currentCardConnector = _cardConnector;
+        spawnedCard.mainConnector = cardConnector;
+        spawnedCard.topCardConnector = spawnedCard.mainConnector.transform.GetChild(0).GetComponent<Transform>();
+        spawnedCard.bottomCardConnector = spawnedCard.mainConnector.transform.GetChild(1).GetComponent<Transform>();
         spawnedCard._cardId = card._cardId;
+        spawnedCard.facing = Card.Facing.Vertical;
         spawnedCard._cardPairType = card._cardPairType;
-        spawnedCard.cardImage = card.cardImage;
+        spawnedCard.cardImage.sprite = card.cardImage.sprite;
         spawnedCard.onHand = false;
         spawnedCard.dropped = true;
         spawnedCard.flipped = false;
         spawnedCard.droppedPoint = droppedPoint;
         spawnedCard.topBottomSpecific = topBottomSpecific;
         spawnedCard.canvasGroup.alpha = 0;
+        spawnedCard.currentTile = tile;
+        spawnedCard.currentTile._placed = true;
+        spawnedCard.currentTile.droppedPoint = droppedPoint;
+        spawnedCard.tileIndex = spawnedCard.currentTile.tileIndex;
+
+        BoardManager.Instance.allDroppedCards.Add(spawnedCard);
 
         switch (droppedPoint)
         {
             case Tile.DroppedPoint.Top:
                 spawnedCard.transform.localRotation = Quaternion.Euler(0, 0, 90);
+                spawnedCard.facing = Card.Facing.Horizontal;
+                BoardManager.Instance.RegisterAllTileOnCardConnectors(spawnedCard);
+                action?.Invoke(card, spawnedCard, pairingCard);
                 break;
             case Tile.DroppedPoint.Bottom:
                 spawnedCard.transform.localRotation = Quaternion.Euler(0, 0, 90);
+                spawnedCard.facing = Card.Facing.Horizontal;
+                BoardManager.Instance.RegisterAllTileOnCardConnectors(spawnedCard);
+                action?.Invoke(card, spawnedCard, pairingCard);
                 break;
             case Tile.DroppedPoint.Left:
+                BoardManager.Instance.RegisterAllTileOnCardConnectors(spawnedCard);
+                action?.Invoke(card, spawnedCard, pairingCard);
                 break;
             case Tile.DroppedPoint.Right:
+                BoardManager.Instance.RegisterAllTileOnCardConnectors(spawnedCard);
+                action?.Invoke(card, spawnedCard, pairingCard);
                 break;
             default:
                 break;
@@ -290,7 +342,7 @@ public class GameplayManager : MonoBehaviour
         return spawnedCard;
     }
 
-    public void MoveCardToBoard(Card card, Card spawnedCard, Transform targetPos, float moveDuration, /*Action action = null,*/ IEnumerator enumerator = null)
+    public void MoveCardToBoard(Card card, Card spawnedCard, Transform targetPos, float moveDuration, Action action = null, IEnumerator enumerator = null)
     {
         RectTransform cardRect = card.GetComponent<RectTransform>();
         RectTransform targetRect = spawnedCard.GetComponent<RectTransform>();
@@ -305,13 +357,22 @@ public class GameplayManager : MonoBehaviour
             LeanPool.Despawn(card);
             mainDecks.Remove(card);
             spawnedCard.canvasGroup.alpha = 1;
-            spawnedCard.transform.SetParent(targetPos.GetComponentInParent<Transform>());
+            spawnedCard.transform.SetParent(targetPos.parent.parent);
+            action?.Invoke();
             StartCoroutine(enumerator);
-            //action?.Invoke();
         });
-
-        
     }
+
+    //public void SetCardConnector(Card card)
+    //{
+    //    if (card.transform.childCount > 0)
+    //    {
+    //        for (int i = 0; i < card.transform.childCount; i++)
+    //        {
+    //            if(card.transform.GetChild(i).GetComponent<CardConnector>)
+    //        }
+    //    }
+    //}
 
     public IEnumerator SetupAllPlayers()
     {
@@ -335,6 +396,59 @@ public class GameplayManager : MonoBehaviour
 
         yield return new WaitUntil(() => gamestart == true);
 
-        player.PickCard(player.handCards[player.handCards.Count - 1]);
+        //player.PickCard(player.handCards[player.handCards.Count - 1]);
+
+        //after all players (player and enemy ai) register their hand card, init player turn
+        player.StateController(Player.PlayerState.GET_TURN);
+    }
+
+    public void TurnShifter()
+    {
+        switch (turnCycle)
+        {
+            case TurnCycle.CLOCKWISE:
+                if (currentPlayerTurnID < allPlayers.Count - 1)
+                {
+                    currentPlayerTurnID++;
+                    Player player = allPlayers[currentPlayerTurnID];
+                    player.StateController(Player.PlayerState.GET_TURN);
+                    Debug.Log($"current player getting turn = {player.playerType}");
+                }
+
+                else
+                {
+                    currentPlayerTurnID = 0;
+                    Player player = allPlayers[currentPlayerTurnID];
+                    player.StateController(Player.PlayerState.GET_TURN);
+                    Debug.Log($"current player getting turn = {player.playerType}");
+                }
+                break;
+
+            case TurnCycle.COUNTER_CLOCKWISE:
+                if (currentPlayerTurnID > 0)
+                {
+                    currentPlayerTurnID--;
+                    Player player = allPlayers[currentPlayerTurnID];
+                    player.StateController(Player.PlayerState.GET_TURN);
+                    Debug.Log($"current player getting turn = {player.playerType}");
+                }
+
+                else
+                {
+                    currentPlayerTurnID = allPlayers.Count - 1;
+                    Player player = allPlayers[currentPlayerTurnID];
+                    player.StateController(Player.PlayerState.GET_TURN);
+                    Debug.Log($"current player getting turn = {player.playerType}");
+                }
+                break;
+            default:
+                break;
+        }
+    }
+
+    public enum TurnCycle
+    {
+        CLOCKWISE = 0,
+        COUNTER_CLOCKWISE = 1
     }
 }

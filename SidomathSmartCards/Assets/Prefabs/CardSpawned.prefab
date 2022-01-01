@@ -135,6 +135,8 @@ MonoBehaviour:
   cardPairType: 
   orderIndex: 0
   onHand: 1
+  canBePick: 1
+  draggable: 1
   picked: 0
   dropped: 0
   matched: 0
@@ -146,6 +148,17 @@ MonoBehaviour:
   canvasGroup: {fileID: 1605071155569826666}
   animator: {fileID: 2263187923322369737}
   player: {fileID: 0}
+  layoutElement: {fileID: 0}
+  originParent: {fileID: 0}
+  placeholderParent: {fileID: 0}
+  cardConnectorParent: []
+  cardConnectorPoints:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
 --- !u!95 &2263187923322369737
 Animator:
   serializedVersion: 3
@@ -156,7 +169,7 @@ Animator:
   m_GameObject: {fileID: 4945046919295830181}
   m_Enabled: 1
   m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 1275b80cb03d2154c94b578014b8b24a, type: 2}
   m_CullingMode: 0
   m_UpdateMode: 0
   m_ApplyRootMotion: 0

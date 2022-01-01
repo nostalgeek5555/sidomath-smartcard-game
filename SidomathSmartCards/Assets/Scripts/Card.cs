@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -7,10 +8,11 @@ using NaughtyAttributes;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
 
-public class Card : MonoBehaviour, IDragHandler, IDropHandler, IBeginDragHandler, IEndDragHandler
+public class Card : MonoBehaviour, IDragHandler, IBeginDragHandler
 {
     [Header("Card Data")]
     public CardType cardType;
+    public Facing facing;
     public Tile.DroppedPoint droppedPoint;
     public Tile.TopBottomSpecific topBottomSpecific;
     public MatchedSide matchedSide;
@@ -18,6 +20,8 @@ public class Card : MonoBehaviour, IDragHandler, IDropHandler, IBeginDragHandler
     [SerializeField] private string cardPairType;
     [SerializeField] private int orderIndex;
     public bool onHand = true;
+    public bool canBePick = true;
+    public bool draggable = true;
     public bool picked = false;
     public bool dropped = false;
     public bool matched = false;
@@ -37,6 +41,12 @@ public class Card : MonoBehaviour, IDragHandler, IDropHandler, IBeginDragHandler
     public Player player;
 
     [Header("Dragging Properties")]
+    public GameObject mainConnector = null;
+    public CardConnector currentCardConnector = null;
+    public Transform topCardConnector = null;
+    public Transform bottomCardConnector = null;
+    public PointerEventData pointerEventData = null;
+    public BoxCollider2D collider2D;
     private Vector2 dragOffset = Vector2.zero;
     private Vector2 limits = Vector2.zero;
     public LayoutElement layoutElement;
@@ -44,10 +54,14 @@ public class Card : MonoBehaviour, IDragHandler, IDropHandler, IBeginDragHandler
     public Transform placeholderParent = null;
     private GameObject placeholder = null;
 
+    [Header("Dropped Card Properties")]
+    public Tile currentTile = null;
+    public string tileIndex;
+    
+
     private void OnEnable()
     {
-        BoardManager.Instance.OnCardDropped += Dropped;
-        BoardManager.Instance.OnCardMatch += Matched;
+        
     }
 
     private void OnDisable()
@@ -57,8 +71,6 @@ public class Card : MonoBehaviour, IDragHandler, IDropHandler, IBeginDragHandler
             cardButton.onClick.RemoveAllListeners();
         }
 
-        BoardManager.Instance.OnCardDropped -= Dropped;
-        BoardManager.Instance.OnCardMatch -= Matched;
     }
 
     public void InitCard(int _id, string _pairType, Sprite _sprite)
@@ -105,78 +117,91 @@ public class Card : MonoBehaviour, IDragHandler, IDropHandler, IBeginDragHandler
 
     public void OnBeginDrag(PointerEventData eventData)
     {
-        if (player.playerType == Player.PlayerType.Player)
+        if (player.playerType == Player.PlayerType.Player && player.playerState == Player.PlayerState.GET_TURN)
         {
+            pointerEventData = eventData;
+            collider2D.enabled = true;
+            player.handCardFitter.enabled = false;
+            player.handGroup.enabled = false;
+            canvasGroup.blocksRaycasts = false;
+            canvasGroup.alpha = 0.6f;
+            transform.localScale = new Vector3(0.7f, 0.7f, 0.7f);
+            player.PickCard(this);
             Debug.Log($"Begin to drag card with id :: {cardId} & pair type {cardPairType}");
 
-            placeholder = new GameObject();
-            placeholder.transform.SetParent(transform.parent);
-            LayoutElement _layoutElement = placeholder.AddComponent<LayoutElement>();
-            _layoutElement.preferredWidth = layoutElement.preferredWidth;
-            _layoutElement.preferredHeight = layoutElement.preferredHeight;
-            _layoutElement.flexibleHeight = 0;
-            _layoutElement.flexibleWidth = 0;
+            //placeholder = new GameObject();
+            //placeholder.transform.SetParent(transform.parent);
+            //LayoutElement _layoutElement = placeholder.AddComponent<LayoutElement>();
+            //_layoutElement.preferredWidth = layoutElement.preferredWidth;
+            //_layoutElement.preferredHeight = layoutElement.preferredHeight;
+            //_layoutElement.flexibleHeight = 0;
+            //_layoutElement.flexibleWidth = 0;
 
-            placeholder.transform.SetSiblingIndex(transform.GetSiblingIndex());
+            //placeholder.transform.SetSiblingIndex(transform.GetSiblingIndex());
 
-            originParent = transform.parent;
-            placeholderParent = originParent;
-            transform.SetParent(transform.parent.parent);
+            //originParent = transform.parent;
+            //placeholderParent = originParent;
+            //transform.SetParent(transform.parent.parent);
         }
     }
 
     public void OnDrag(PointerEventData eventData)
     {
-        Vector3 screenCenter = new Vector3(Screen.width * 0.5f, Screen.height * 0.5f, -Camera.main.transform.position.z);
-        Vector3 screenTouch = screenCenter + new Vector3(eventData.delta.x, eventData.delta.y, 0);
-
-        Vector3 worldCenterPosition = Camera.main.ScreenToWorldPoint(screenCenter);
-        Vector3 worldTouchPosition = Camera.main.ScreenToWorldPoint(screenTouch);
-
-        Vector3 delta = worldTouchPosition - worldCenterPosition;
-
-        transform.position += delta;
-
-        if (placeholder.transform.parent != placeholderParent)
+        if (player.playerState == Player.PlayerState.GET_TURN && cardType == CardType.OnHand)
         {
-            placeholder.transform.SetParent(placeholderParent);
+            Vector3 screenCenter = new Vector3(Screen.width * 0.5f, Screen.height * 0.5f, -Camera.main.transform.position.z);
+            Vector3 screenTouch = screenCenter + new Vector3(eventData.delta.x, eventData.delta.y, 0);
+
+            Vector3 worldCenterPosition = Camera.main.ScreenToWorldPoint(screenCenter);
+            Vector3 worldTouchPosition = Camera.main.ScreenToWorldPoint(screenTouch);
+
+            Vector3 delta = worldTouchPosition - worldCenterPosition;
+
+            transform.position += delta;
         }
 
-        int newSiblingIndex = placeholderParent.childCount;
-
-        for (int i = 0; i < placeholderParent.childCount; i++)
+        else
         {
-            if (transform.position.x < placeholderParent.GetChild(i).position.x)
+            throw new Exception();
+        }
+    }
+
+    public void TweenBack(Action<int, Card> action = null)
+    {
+        if (GameplayManager.Instance != null)
+        {
+            if (player != null)
             {
-                newSiblingIndex = i;
-                if (placeholder.transform.GetSiblingIndex() < newSiblingIndex)
-                    newSiblingIndex--;
-
-                break;
+                Sequence sequence = DOTween.Sequence();
+                sequence.AppendInterval(0.1f);
+                sequence.Join(transform.DOMove(player.transform.position, 0.4f));
+                sequence.AppendCallback(() =>
+                {
+                    pointerEventData = null;
+                    onHand = true;
+                    collider2D.enabled = false;
+                    transform.SetParent(player.transform);
+                    transform.SetSiblingIndex(cardId);
+                    player.handCardFitter.enabled = true;
+                    player.handGroup.enabled = true;
+                    action?.Invoke(cardId, this);
+                });
             }
+            
         }
-
-        placeholder.transform.SetSiblingIndex(newSiblingIndex);
-        //transform.position = eventData.position - dragOffset;
-        //var dragPos = transform.localPosition;
-        //if (dragPos.x < -limits.x) { dragPos.x = -limits.x; }
-        //if (dragPos.x > limits.x) { dragPos.x = limits.x; }
-        //if (dragPos.y < -limits.y) { dragPos.y = -limits.y; }
-        //if (dragPos.y > limits.y) { dragPos.y = limits.y; }
-        //transform.localPosition = dragPos;
     }
 
-    public void OnDrop(PointerEventData eventData)
+    public void OnTriggerEnter(Collider other)
     {
-        throw new System.NotImplementedException();
+        Debug.Log($"collide with other object == {other.gameObject.name}");
+        //canvasGroup.blocksRaycasts = true;
     }
 
-
-    public void OnEndDrag(PointerEventData eventData)
+    public enum Facing
     {
-        dragOffset = Vector2.zero;
+       Vertical = 0,
+       Horizontal = 1
     }
-
     public enum CardType
     {
         OnHand = 0,
@@ -187,6 +212,7 @@ public class Card : MonoBehaviour, IDragHandler, IDropHandler, IBeginDragHandler
     {
         None = 0,
         Left = 1,
-        Right = 2
+        Right = 2,
+        Both = 3
     }
 }

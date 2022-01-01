@@ -49,14 +49,17 @@ MonoBehaviour:
   aiPanelParent: {fileID: 0}
   player: {fileID: 0}
   totalEnemy: 0
-  allPlayers: []
   cardPrefab: {fileID: 8912311863563262375, guid: e7138296ead12274c8d935e3db10384a, type: 3}
   cardSpawnedPrefab: {fileID: 8588623442856330343, guid: 3472b77e37c256946a1f1983c8760c62, type: 3}
+  cardConnectorPrefab: {fileID: 989418294888819139, guid: c44dc475130933948819c73f67f26402, type: 3}
   dealerDeckHolder: {fileID: 0}
   currentGameMode: {fileID: 0}
+  turnCycle: 0
+  currentPlayerTurnID: 0
   levelID: 0
   levelName: 
   mainDecks: []
+  allPlayers: []
   deckHolders: []
   gamestart: 0
   gameover: 0

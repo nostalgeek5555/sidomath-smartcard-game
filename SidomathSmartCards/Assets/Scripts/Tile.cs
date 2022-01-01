@@ -3,12 +3,13 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using NaughtyAttributes;
+using UnityEngine.EventSystems;
 
 [Serializable]
 public class Tile : MonoBehaviour
 {
     [Header("Tile Properties")]
-    [SerializeField] private string tileIndex;
+    public string tileIndex;
     [SerializeField] private bool droppable = true;
     [SerializeField] private bool placed = false;
 
@@ -20,17 +21,20 @@ public class Tile : MonoBehaviour
     public DroppedPoint droppedPoint;
     public TopBottomSpecific topBottomSpecificPoint;
     public Card droppedCard;
+    public BoxCollider2D boxCollider;
 
-
-    public string _tileIndex { get => tileIndex; set => tileIndex = value; }
     public bool _droppable { get => droppable; set => droppable = value; }
     public bool _placed { get => placed; set => placed = value; }
 
+    [Header("Properties for Card Connector")]
+    public bool haveCardConnector = false;
+
     public void InitTile(string id)
     {
-        _tileIndex = id;
+        tileIndex = id;
         _droppable = true;
         _placed = false;
+        haveCardConnector = false;
         droppedPoint = DroppedPoint.Empty;
         topBottomSpecificPoint = TopBottomSpecific.None;
     }
@@ -55,6 +59,18 @@ public class Tile : MonoBehaviour
                 break;
         }
     }
+
+    //private void OnTriggerEnter2D(Collider2D collision)
+    //{
+    //    if (collision != null)
+    //    {
+    //        if (collision.TryGetComponent(out CardConnector cardConnector))
+    //        {
+    //            cardConnector.tileBelow = this;
+    //            boxCollider.enabled = false;
+    //        }
+    //    }
+    //}
 
     public enum DroppedPoint
     {

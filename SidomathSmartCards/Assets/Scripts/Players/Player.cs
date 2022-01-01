@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -26,14 +27,22 @@ public class Player : MonoBehaviour
     public int prevCardIndex;
     public Card pickedCard;
 
+
+
+    public virtual void OnDisable()
+    {
+
+    }
+
     private void Start()
     {
-        InitPlayer();    
+        //BoardManager.Instance.OnCardDropped += 
+        InitPlayer();
     }
 
     public void InitPlayer()
     {
-        playerState = PlayerState.Idle;
+        playerState = PlayerState.PROCESSING;
         turn = false;
         gameover = false;
     }
@@ -63,23 +72,26 @@ public class Player : MonoBehaviour
         }
     }
 
-    public void StateController(PlayerState playerState)
+    public virtual void StateController(PlayerState playerState)
     {
         switch(playerState)
         {
-            case PlayerState.Idle:
+            case PlayerState.PROCESSING:
                 break;
-            case PlayerState.Turn:
+            case PlayerState.GET_TURN:
                 OnGettingTurn();
                 break;
-            case PlayerState.EndTurn:
+            case PlayerState.END_TURN:
                 OnEndingTurn();
                 break;
-            case PlayerState.SkipTurn:
+            case PlayerState.SKIP_TURN:
                 OnSkipTurn();
                 break;
-            case PlayerState.GameOver:
+            case PlayerState.WIN:
                 break;
+            case PlayerState.GAME_OVER:
+                break;
+
             default:
                 break;
         }
@@ -87,45 +99,126 @@ public class Player : MonoBehaviour
 
     public virtual void PickCard(Card card)
     {
-        Debug.Log($"pick card on hand :: {card.cardType.ToString()}");
-        pickedCard = card;
-        pickedCard.picked = true;
-        pickedCard.cardHighlight.SetActive(true);
-        pickedCard.overrideCanvas.overrideSorting = true;
-        pickedCard.overrideCanvas.sortingOrder = 1;
+        if (card.canBePick)
+        {
+            Debug.Log($"pick card on hand :: {card.cardType}");
+            pickedCard = card;
+            pickedCard.picked = true;
+            pickedCard.cardHighlight.SetActive(true);
+            pickedCard.overrideCanvas.overrideSorting = true;
+            pickedCard.overrideCanvas.sortingOrder = 1;
+        }
 
-       foreach (Card _card in handCards)
-       {
-            if (_card._cardId != card._cardId)
+
+        UnpickCards(card._cardId);
+    }
+
+    public void UnpickCards(int cardId)
+    {
+        foreach (Card _card in handCards)
+        {
+            if (_card._cardId != cardId)
             {
                 _card.picked = false;
                 _card.cardHighlight.SetActive(false);
                 _card.overrideCanvas.sortingOrder = 0;
                 _card.overrideCanvas.overrideSorting = false;
             }
-       }
+        }
+    }
+
+    public void OnCardTweenedBack(int cardId)
+    {
+        foreach (Card card in handCards)
+        {
+            if (card._cardId != cardId)
+            {
+                
+                card.canBePick = false;
+                card.draggable = false;
+                card.cardHighlight.SetActive(false);
+            }
+        }
+    }
+
+    public void OnCardFinishTweenBack(int cardId, Card _card)
+    {
+        //handCardFitter.enabled = false;
+        //handGroup.enabled = false;
+
+        _card.canvasGroup.alpha = 1f;
+        _card.transform.localScale = Vector3.one;
+        _card.canvasGroup.blocksRaycasts = true;
+
+        foreach (Card card in handCards)
+        {
+            card.canBePick = true;
+            card.draggable = true;
+
+            if (card._cardId == cardId)
+            {
+                PickCard(card);
+            }
+        }
+    }
+
+    public virtual void OnProcessing()
+    {
+
     }
 
 
     public virtual void OnGettingTurn()
     {
-        playerState = PlayerState.Turn;
+        playerState = PlayerState.GET_TURN;
+
+        turn = true;
+
+        if (health > 1)
+        {
+            if (handCards.Count > 0)
+            {
+                Card card = handCards[handCards.Count - 1];
+                PickCard(card);
+            }
+
+            else
+            {
+                StateController(PlayerState.WIN);
+            }
+        }
+
+        else
+        {
+            StateController(PlayerState.GAME_OVER);
+        }
+        
     }
 
     public virtual void OnEndingTurn()
     {
-        playerState = PlayerState.EndTurn;
+        playerState = PlayerState.END_TURN;
 
     }
 
     public virtual void OnSkipTurn()
     {
-        playerState = PlayerState.SkipTurn;
+        playerState = PlayerState.SKIP_TURN;
+    }
+
+    public virtual void OnWinning()
+    {
+        playerState = PlayerState.WIN;
+    }
+
+    public void OnGameOver()
+    {
+        playerState = PlayerState.GAME_OVER;
     }
 
     public virtual void NavigatingCards()
     {
-        if (handCards.Count > 0 && playerState == PlayerState.Turn)
+        if (handCards.Count > 0 && playerState == PlayerState.GET_TURN)
         {
 
         }
@@ -140,10 +233,11 @@ public class Player : MonoBehaviour
 
     public enum PlayerState
     {
-        Idle = 0,
-        Turn = 1,
-        EndTurn = 2,
-        SkipTurn = 3,
-        GameOver = 4
+        PROCESSING = 0,
+        GET_TURN = 1,
+        END_TURN = 2,
+        SKIP_TURN = 3,
+        WIN = 4,
+        GAME_OVER = 5
     }
 }
