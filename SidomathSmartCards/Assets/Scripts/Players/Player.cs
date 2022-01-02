@@ -143,9 +143,7 @@ public class Player : MonoBehaviour
 
     public void OnCardFinishTweenBack(int cardId, Card _card)
     {
-        //handCardFitter.enabled = false;
-        //handGroup.enabled = false;
-
+        _card.onTweeningBack = false;
         _card.canvasGroup.alpha = 1f;
         _card.transform.localScale = Vector3.one;
         _card.canvasGroup.blocksRaycasts = true;

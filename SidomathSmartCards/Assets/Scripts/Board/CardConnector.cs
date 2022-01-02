@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-public class CardConnector : MonoBehaviour, IDropHandler, ICanvasRaycastFilter
+public class CardConnector : MonoBehaviour, ICanvasRaycastFilter
 {
     public RectTransform rectTransform;
     public CardConnectorType cardConnectorType;
@@ -11,6 +11,7 @@ public class CardConnector : MonoBehaviour, IDropHandler, ICanvasRaycastFilter
     public bool dropped = false;
     public string cardConnectorTileIndex = "";
 
+    public Card draggedCard = null;
     public Tile tileBelow = null;
 
     private void Awake()
@@ -18,32 +19,54 @@ public class CardConnector : MonoBehaviour, IDropHandler, ICanvasRaycastFilter
         rectTransform = GetComponent<RectTransform>();  
     }
 
-    public void OnDrop(PointerEventData eventData)
-    {
-        Debug.Log("valid dropped");
+    //public void OnDrop(PointerEventData eventData)
+    //{
+    //    Debug.Log("valid dropped");
 
-        if (eventData.pointerDrag != null && dropped == false)
-        {
-            if (eventData.pointerDrag.TryGetComponent(out Card card))
-            {
+    //    if (eventData.pointerDrag != null && dropped == false)
+    //    {
+    //        if (draggedCard != null)
+    //        {
+    //            if (!CheckIfConnectedCardFlipped())
+    //            {
+    //                Card parentCard = transform.parent.parent.parent.GetComponent<Card>();
+    //                BoardManager.Instance.OnDropCard(draggedCard, parentCard, this);
+    //                Debug.Log("Dropped on valid card connector");
+    //            }
+
+    //            else
+    //            {
+    //                Debug.Log("on card flipped tween back card");
+    //                draggedCard.TweenBack(GameplayManager.Instance.player.OnCardFinishTweenBack);
+    //            }
+    //        }
+
+    //        //if (eventData.pointerDrag.TryGetComponent(out Card card))
+    //        //{
                 
-                if (!CheckIfConnectedCardFlipped())
-                {
-                    Card parentCard = transform.parent.parent.parent.GetComponent<Card>();
-                    BoardManager.Instance.OnDropCard(card, parentCard, this);
-                    Debug.Log("Dropped on valid card connector");
-                }
+    //        //    if (!CheckIfConnectedCardFlipped())
+    //        //    {
+    //        //        Card parentCard = transform.parent.parent.parent.GetComponent<Card>();
+    //        //        BoardManager.Instance.OnDropCard(card, parentCard, this);
+    //        //        Debug.Log("Dropped on valid card connector");
+    //        //    }
 
-                else
-                {
-                    Debug.Log("on card flipped tween back card");
-                    card.TweenBack(GameplayManager.Instance.player.OnCardFinishTweenBack);
-                }
-            }
-        }
-    }
+    //        //    else
+    //        //    {
+    //        //        Debug.Log("on card flipped tween back card");
+    //        //        card.TweenBack(GameplayManager.Instance.player.OnCardFinishTweenBack);
+    //        //    }
+    //        //}
+    //    }
 
-    private bool CheckIfConnectedCardFlipped()
+    //    else
+    //    {
+    //        draggedCard.TweenBack(GameplayManager.Instance.player.OnCardFinishTweenBack);
+    //        Debug.Log("nothing dragged");
+    //    }
+    //}
+
+    public bool CheckIfConnectedCardFlipped()
     {
         Card parentCard = transform.parent.parent.parent.GetComponent<Card>();
 
@@ -60,43 +83,62 @@ public class CardConnector : MonoBehaviour, IDropHandler, ICanvasRaycastFilter
     
     
 
-    public void OnTriggerEnter2D(Collider2D collision)
+    private void OnTriggerEnter2D(Collider2D collision)
     {
         if (collision != null)
         {
             Debug.Log($"collide with object == {collision.gameObject.name}");
             if (collision.TryGetComponent(out Card card))
             {
-                //card.canvasGroup.blocksRaycasts = true;
-                Debug.Log($"block ray card == {card.canvasGroup.blocksRaycasts}");
-                if (card.pointerEventData.dragging)
+                if (!card.onTweeningBack)
                 {
                     if (card.currentCardConnector != null)
                     {
                         card.currentCardConnector.animator.SetTrigger(HighlightType.Droppable.ToString());
                         card.currentCardConnector = this;
+                        card.insideCardConnector = true;
                         animator.ResetTrigger(HighlightType.Droppable.ToString());
                         animator.SetTrigger(HighlightType.Highlight.ToString());
                     }
-                    
+
                     else
                     {
                         card.currentCardConnector = this;
+                        card.insideCardConnector = true;
                         animator.ResetTrigger(HighlightType.Droppable.ToString());
                         animator.SetTrigger(HighlightType.Highlight.ToString());
                     }
                 }
                 
+
             }
         }
     }
 
-    public void OnTriggerExit2D(Collider2D collision)
+    private void OnTriggerStay2D(Collider2D collision)
     {
         if (collision != null)
         {
             if (collision.TryGetComponent(out Card card))
             {
+                if (!card.onTweeningBack)
+                {
+                    card.currentCardConnector = this;
+                    card.insideCardConnector = true;
+                    animator.ResetTrigger(HighlightType.Droppable.ToString());
+                    animator.SetTrigger(HighlightType.Highlight.ToString());
+                }
+            }
+        }
+    }
+
+    private void OnTriggerExit2D(Collider2D collision)
+    {
+        if (collision != null)
+        {
+            if (collision.TryGetComponent(out Card card))
+            {
+                card.insideCardConnector = false;
                 card.canvasGroup.blocksRaycasts = false;
                 animator.ResetTrigger(HighlightType.Highlight.ToString());
                 animator.SetTrigger(HighlightType.Droppable.ToString());

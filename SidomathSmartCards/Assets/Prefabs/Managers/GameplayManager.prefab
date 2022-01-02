@@ -56,6 +56,7 @@ MonoBehaviour:
   currentGameMode: {fileID: 0}
   turnCycle: 0
   currentPlayerTurnID: 0
+  distributeCardTime: 0.2
   levelID: 0
   levelName: 
   mainDecks: []

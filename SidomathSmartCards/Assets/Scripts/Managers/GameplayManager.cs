@@ -26,6 +26,7 @@ public class GameplayManager : MonoBehaviour
     public ModeSO currentGameMode;
     public TurnCycle turnCycle;
     public int currentPlayerTurnID;
+    public float distributeCardTime;
 
     [Header("Level Properties")]
     public int levelID;
@@ -210,7 +211,7 @@ public class GameplayManager : MonoBehaviour
             if (deckHolderID < deckHolders.Count)
             {
                 Sequence sequence = DOTween.Sequence();
-                sequence.Append(card.gameObject.transform.DOMove(deckHolders[deckHolderID].position, 0.1f, false));
+                sequence.Append(card.gameObject.transform.DOMove(deckHolders[deckHolderID].position, distributeCardTime, false));
                 sequence.AppendCallback(() =>
                 {
                     card.gameObject.transform.SetParent(deckHolders[deckHolderID]);
@@ -218,7 +219,7 @@ public class GameplayManager : MonoBehaviour
                     cardID++;
                     deckHolderID++;
 
-                    Debug.Log($"current card id :: {cardID}");
+                    //Debug.Log($"current card id :: {cardID}");
                     DistributeCards(cards, cardID, deckHolderID);
                 });
             }
@@ -227,7 +228,7 @@ public class GameplayManager : MonoBehaviour
             {
                 deckHolderID = 0;
                 Sequence sequence = DOTween.Sequence();
-                sequence.Append(card.gameObject.transform.DOMove(deckHolders[deckHolderID].position, 0.1f, false));
+                sequence.Append(card.gameObject.transform.DOMove(deckHolders[deckHolderID].position, distributeCardTime, false));
                 sequence.AppendCallback(() =>
                 {
                     card.gameObject.transform.SetParent(deckHolders[deckHolderID]);
@@ -235,7 +236,7 @@ public class GameplayManager : MonoBehaviour
                     cardID++;
                     deckHolderID++;
 
-                    Debug.Log($"current card id :: {cardID}");
+                    //Debug.Log($"current card id :: {cardID}");
                     DistributeCards(cards, cardID, deckHolderID);
                 });
             }

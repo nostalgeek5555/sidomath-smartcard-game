@@ -340,6 +340,7 @@ public class BoardManager : MonoBehaviour
 
     public void OnDropCard(Card card, Card parentCard, CardConnector cardConnector)
     {
+        Debug.Log($"card pair type parent {parentCard._cardPairType}");
         string[] cardTokens = card._cardPairType.Split('|');
         string[] parentTokens = parentCard._cardPairType.Split('|');
 

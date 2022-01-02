@@ -8,7 +8,7 @@ using NaughtyAttributes;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
 
-public class Card : MonoBehaviour, IDragHandler, IBeginDragHandler
+public class Card : MonoBehaviour, IDragHandler, IBeginDragHandler, IEndDragHandler
 {
     [Header("Card Data")]
     public CardType cardType;
@@ -41,6 +41,8 @@ public class Card : MonoBehaviour, IDragHandler, IBeginDragHandler
     public Player player;
 
     [Header("Dragging Properties")]
+    public bool insideCardConnector = false;
+    public bool onTweeningBack = false;
     public GameObject mainConnector = null;
     public CardConnector currentCardConnector = null;
     public Transform topCardConnector = null;
@@ -55,6 +57,7 @@ public class Card : MonoBehaviour, IDragHandler, IBeginDragHandler
     private GameObject placeholder = null;
 
     [Header("Dropped Card Properties")]
+    public GraphicRaycaster graphicRaycaster = null;
     public Tile currentTile = null;
     public string tileIndex;
     
@@ -172,6 +175,7 @@ public class Card : MonoBehaviour, IDragHandler, IBeginDragHandler
         {
             if (player != null)
             {
+                onTweeningBack = true;
                 Sequence sequence = DOTween.Sequence();
                 sequence.AppendInterval(0.1f);
                 sequence.Join(transform.DOMove(player.transform.position, 0.4f));
@@ -191,10 +195,79 @@ public class Card : MonoBehaviour, IDragHandler, IBeginDragHandler
         }
     }
 
-    public void OnTriggerEnter(Collider other)
+    private void OnTriggerEnter2D(Collider2D collision)
     {
-        Debug.Log($"collide with other object == {other.gameObject.name}");
-        //canvasGroup.blocksRaycasts = true;
+        if (collision.GetComponent<CardConnector>() != null)
+        {
+            CardConnector cardConnector = collision.GetComponent<CardConnector>();
+            if (!cardConnector.dropped)
+            {
+                cardConnector.draggedCard = this;
+                insideCardConnector = true;
+            }
+        }
+    }
+
+    private void OnTriggerExit2D(Collider2D collision)
+    {
+        if (collision.GetComponent<CardConnector>() != null)
+        {
+            CardConnector cardConnector = collision.GetComponent<CardConnector>();
+            if (!cardConnector.dropped)
+            {
+                cardConnector.draggedCard = null;
+                currentCardConnector = null;
+                insideCardConnector = false;
+            }
+        }
+    }
+
+    private void OnTriggerStay2D(Collider2D collision)
+    {
+        if (collision.GetComponent<CardConnector>() != null)
+        {
+            CardConnector cardConnector = collision.GetComponent<CardConnector>();
+            if (!cardConnector.dropped)
+            {
+                cardConnector.draggedCard = this;
+                insideCardConnector = true;
+            }
+        }
+    }
+
+    public void OnEndDrag(PointerEventData eventData)
+    {
+        canvasGroup.blocksRaycasts = true;
+
+        Debug.Log("on drop this card");
+        if (currentCardConnector == null)
+        {
+            TweenBack(GameplayManager.Instance.player.OnCardFinishTweenBack);
+        }
+
+        else
+        {
+            if (insideCardConnector)
+            {
+                if (!currentCardConnector.CheckIfConnectedCardFlipped())
+                {
+                    Card parentCard = currentCardConnector.transform.parent.parent.parent.GetComponent<Card>();
+                    BoardManager.Instance.OnDropCard(this, parentCard, currentCardConnector);
+                    Debug.Log("Dropped on valid card connector");
+                }
+
+                else
+                {
+                    Debug.Log("on card flipped tween back card");
+                    TweenBack(GameplayManager.Instance.player.OnCardFinishTweenBack);
+                }
+            }
+
+            else
+            {
+                TweenBack(GameplayManager.Instance.player.OnCardFinishTweenBack);
+            }
+        }
     }
 
     public enum Facing
