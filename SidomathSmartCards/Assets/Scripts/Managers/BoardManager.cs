@@ -100,15 +100,18 @@ public class BoardManager : MonoBehaviour
                 for (int i = 0; i < card.topCardConnector.childCount; i++)
                 {
                     CardConnector cardConnector = card.topCardConnector.GetChild(i).GetComponent<CardConnector>();
-                    
+                    Tile connectedTile; 
+
                     switch (cardConnector.cardConnectorType)
                     {
                         case CardConnector.CardConnectorType.Top:
                             if (tileIndexY - 1 >= 0)
                             {
-                                cardConnector.tileBelow = tilesOnBoards[tileIndexX, tileIndexY - 1];
+                                connectedTile = tilesOnBoards[tileIndexX, tileIndexY - 1];
+                                cardConnector.tileBelow = connectedTile;
                                 cardConnector.tileBelow.haveCardConnector = true;
                                 cardConnector.gameObject.SetActive(true);
+                                cardConnector.cardConnectorTileIndex = cardConnector.tileBelow.tileIndex;
                                 Debug.Log($"get tile below index {cardConnector.tileBelow.tileIndex}");
                             }
 
@@ -122,9 +125,11 @@ public class BoardManager : MonoBehaviour
                         case CardConnector.CardConnectorType.TopRight:
                             if (tileIndexX + 1 < boardWidth)
                             {
-                                cardConnector.tileBelow = tilesOnBoards[tileIndexX + 1, tileIndexY];
+                                connectedTile = tilesOnBoards[tileIndexX + 1, tileIndexY];
+                                cardConnector.tileBelow = connectedTile;
                                 cardConnector.tileBelow.haveCardConnector = true;
                                 cardConnector.gameObject.SetActive(true);
+                                cardConnector.cardConnectorTileIndex = cardConnector.tileBelow.tileIndex;
                                 Debug.Log($"get tile below index {cardConnector.tileBelow.tileIndex}");
                             }
 
@@ -137,9 +142,11 @@ public class BoardManager : MonoBehaviour
                         case CardConnector.CardConnectorType.TopLeft:
                             if (tileIndexX - 1 >= 0)
                             {
-                                cardConnector.tileBelow = tilesOnBoards[tileIndexX - 1, tileIndexY];
+                                connectedTile = tilesOnBoards[tileIndexX - 1, tileIndexY];
+                                cardConnector.tileBelow = connectedTile;
                                 cardConnector.tileBelow.haveCardConnector = true;
                                 cardConnector.gameObject.SetActive(true);
+                                cardConnector.cardConnectorTileIndex = cardConnector.tileBelow.tileIndex;
                                 Debug.Log($"get tile below index {cardConnector.tileBelow.tileIndex}");
                             }
 
@@ -157,15 +164,18 @@ public class BoardManager : MonoBehaviour
                 for (int i = 0; i < card.bottomCardConnector.childCount; i++)
                 {
                     CardConnector cardConnector = card.bottomCardConnector.GetChild(i).GetComponent<CardConnector>();
+                    Tile connectedTile;
 
                     switch (cardConnector.cardConnectorType)
                     {
                         case CardConnector.CardConnectorType.Bottom:
                             if (tileIndexY + 1 < boardHeight)
                             {
-                                cardConnector.tileBelow = tilesOnBoards[tileIndexX, tileIndexY + 1];
+                                connectedTile = tilesOnBoards[tileIndexX, tileIndexY + 1];
+                                cardConnector.tileBelow = connectedTile;
                                 cardConnector.tileBelow.haveCardConnector = true;
                                 cardConnector.gameObject.SetActive(true);
+                                cardConnector.cardConnectorTileIndex = cardConnector.tileBelow.tileIndex;
                                 Debug.Log($"get tile below index {cardConnector.tileBelow.tileIndex}");
                             }
 
@@ -179,9 +189,11 @@ public class BoardManager : MonoBehaviour
                         case CardConnector.CardConnectorType.BottomRight:
                             if (tileIndexX + 1 < boardWidth)
                             {
-                                cardConnector.tileBelow = tilesOnBoards[tileIndexX + 1, tileIndexY];
+                                connectedTile = tilesOnBoards[tileIndexX + 1, tileIndexY];
+                                cardConnector.tileBelow = connectedTile;
                                 cardConnector.tileBelow.haveCardConnector = true;
                                 cardConnector.gameObject.SetActive(true);
+                                cardConnector.cardConnectorTileIndex = cardConnector.tileBelow.tileIndex;
                                 Debug.Log($"get tile below index {cardConnector.tileBelow.tileIndex}");
                             }
 
@@ -194,9 +206,11 @@ public class BoardManager : MonoBehaviour
                         case CardConnector.CardConnectorType.BottomLeft:
                             if (tileIndexX - 1 >= 0)
                             {
-                                cardConnector.tileBelow = tilesOnBoards[tileIndexX - 1, tileIndexY];
+                                connectedTile = tilesOnBoards[tileIndexX - 1, tileIndexY];
+                                cardConnector.tileBelow = connectedTile;
                                 cardConnector.tileBelow.haveCardConnector = true;
                                 cardConnector.gameObject.SetActive(true);
+                                cardConnector.cardConnectorTileIndex = cardConnector.tileBelow.tileIndex;
                                 Debug.Log($"get tile below index {cardConnector.tileBelow.tileIndex}");
                             }
 
@@ -216,13 +230,15 @@ public class BoardManager : MonoBehaviour
                 for (int i = 0; i < card.topCardConnector.childCount; i++)
                 {
                     CardConnector cardConnector = card.topCardConnector.GetChild(i).GetComponent<CardConnector>();
+                    Tile connectedTile;
 
                     switch (cardConnector.cardConnectorType)
                     {
                         case CardConnector.CardConnectorType.Top:
                             if (tileIndexX - 1 >= 0)
                             {
-                                cardConnector.tileBelow = tilesOnBoards[tileIndexX - 1, tileIndexY];
+                                connectedTile = tilesOnBoards[tileIndexX - 1, tileIndexY];
+                                cardConnector.tileBelow = connectedTile;
                                 cardConnector.tileBelow.haveCardConnector = true;
                                 cardConnector.gameObject.SetActive(true);
                                 cardConnector.cardConnectorTileIndex = cardConnector.tileBelow.tileIndex;
@@ -239,7 +255,8 @@ public class BoardManager : MonoBehaviour
                         case CardConnector.CardConnectorType.TopRight:
                             if (tileIndexY - 1 >= 0)
                             {
-                                cardConnector.tileBelow = tilesOnBoards[tileIndexX, tileIndexY - 1];
+                                connectedTile = tilesOnBoards[tileIndexX, tileIndexY - 1];
+                                cardConnector.tileBelow = connectedTile;
                                 cardConnector.tileBelow.haveCardConnector = true;
                                 cardConnector.gameObject.SetActive(true);
                                 cardConnector.cardConnectorTileIndex = cardConnector.tileBelow.tileIndex;
@@ -255,7 +272,8 @@ public class BoardManager : MonoBehaviour
                         case CardConnector.CardConnectorType.TopLeft:
                             if (tileIndexY + 1 < boardHeight)
                             {
-                                cardConnector.tileBelow = tilesOnBoards[tileIndexX, tileIndexY + 1];
+                                connectedTile = tilesOnBoards[tileIndexX, tileIndexY + 1];
+                                cardConnector.tileBelow = connectedTile;
                                 cardConnector.tileBelow.haveCardConnector = true;
                                 cardConnector.gameObject.SetActive(true);
                                 cardConnector.cardConnectorTileIndex = cardConnector.tileBelow.tileIndex;
@@ -276,13 +294,15 @@ public class BoardManager : MonoBehaviour
                 for (int i = 0; i < card.bottomCardConnector.childCount; i++)
                 {
                     CardConnector cardConnector = card.bottomCardConnector.GetChild(i).GetComponent<CardConnector>();
+                    Tile connectedTile;
 
                     switch (cardConnector.cardConnectorType)
                     {
                         case CardConnector.CardConnectorType.Bottom:
                             if (tileIndexX + 1 < boardWidth)
                             {
-                                cardConnector.tileBelow = tilesOnBoards[tileIndexX + 1, tileIndexY];
+                                connectedTile = tilesOnBoards[tileIndexX + 1, tileIndexY];
+                                cardConnector.tileBelow = connectedTile;
                                 cardConnector.tileBelow.haveCardConnector = true;
                                 cardConnector.gameObject.SetActive(true);
                                 cardConnector.cardConnectorTileIndex = cardConnector.tileBelow.tileIndex;
@@ -299,7 +319,8 @@ public class BoardManager : MonoBehaviour
                         case CardConnector.CardConnectorType.BottomRight:
                             if (tileIndexY - 1 >= 0)
                             {
-                                cardConnector.tileBelow = tilesOnBoards[tileIndexX, tileIndexY - 1];
+                                connectedTile = tilesOnBoards[tileIndexX, tileIndexY - 1];
+                                cardConnector.tileBelow = connectedTile;
                                 cardConnector.tileBelow.haveCardConnector = true;
                                 cardConnector.gameObject.SetActive(true);
                                 cardConnector.cardConnectorTileIndex = cardConnector.tileBelow.tileIndex;
@@ -315,7 +336,8 @@ public class BoardManager : MonoBehaviour
                         case CardConnector.CardConnectorType.BottomLeft:
                             if (tileIndexY + 1 < boardHeight)
                             {
-                                cardConnector.tileBelow = tilesOnBoards[tileIndexX, tileIndexY + 1];
+                                connectedTile = tilesOnBoards[tileIndexX, tileIndexY + 1];
+                                cardConnector.tileBelow = connectedTile;
                                 cardConnector.tileBelow.haveCardConnector = true;
                                 cardConnector.gameObject.SetActive(true);
                                 cardConnector.cardConnectorTileIndex = cardConnector.tileBelow.tileIndex;
@@ -338,6 +360,24 @@ public class BoardManager : MonoBehaviour
         }
     }
 
+    public void CheckIfTileHasConnector(CardConnector cardConnector, Tile tile)
+    {
+        if (!tile.haveCardConnector)
+        {
+            cardConnector.tileBelow = tile;
+            cardConnector.tileBelow.haveCardConnector = true;
+            cardConnector.gameObject.SetActive(true);
+            cardConnector.cardConnectorTileIndex = cardConnector.tileBelow.tileIndex;
+            Debug.Log($"get tile below index {cardConnector.tileBelow.tileIndex}");
+        }
+
+        else
+        {
+            cardConnector.tileBelow = null;
+            cardConnector.gameObject.SetActive(false);
+        }
+    }
+
     public void OnDropCard(Card card, Card parentCard, CardConnector cardConnector)
     {
         Debug.Log($"card pair type parent {parentCard._cardPairType}");
@@ -346,8 +386,7 @@ public class BoardManager : MonoBehaviour
 
        if (parentCard.matchedSide == Card.MatchedSide.None)
        {
-            if (cardConnector.cardConnectorType == CardConnector.CardConnectorType.Top ||
-                cardConnector.cardConnectorType == CardConnector.CardConnectorType.TopRight)
+            if (cardConnector.cardConnectorType == CardConnector.CardConnectorType.Top)
             {
                 if (cardTokens[1] == parentTokens[0])
                 {
@@ -363,8 +402,61 @@ public class BoardManager : MonoBehaviour
                 }
             }
 
-            else if (cardConnector.cardConnectorType == CardConnector.CardConnectorType.Bottom ||
-                     cardConnector.cardConnectorType == CardConnector.CardConnectorType.BottomLeft)
+            else if (cardConnector.cardConnectorType == CardConnector.CardConnectorType.TopRight)
+            {
+                switch (parentCard.facing)
+                {
+                    case Card.Facing.Vertical:
+                        if (cardTokens[0] == parentTokens[0])
+                        {
+                            card.matchedSide = Card.MatchedSide.Left;
+                            parentCard.matchedSide = Card.MatchedSide.Left;
+                            OnDroppedCardMatch(card, parentCard, cardConnector);
+                        }
+
+                        else
+                        {
+                            Debug.Log($"not match {cardTokens[1]} with {parentTokens[0]}");
+                            card.TweenBack(GameplayManager.Instance.player.OnCardFinishTweenBack);
+                        }
+                        break;
+
+                    case Card.Facing.Horizontal:
+                        if (cardTokens[1] == parentTokens[0])
+                        {
+                            card.matchedSide = Card.MatchedSide.Right;
+                            parentCard.matchedSide = Card.MatchedSide.Left;
+                            OnDroppedCardMatch(card, parentCard, cardConnector);
+                        }
+
+                        else
+                        {
+                            Debug.Log($"not match {cardTokens[1]} with {parentTokens[0]}");
+                            card.TweenBack(GameplayManager.Instance.player.OnCardFinishTweenBack);
+                        }
+                        break;
+                    default:
+                        break;
+                }
+            }
+
+            else if (cardConnector.cardConnectorType == CardConnector.CardConnectorType.TopLeft)
+            {
+                if (cardTokens[1] == parentTokens[0])
+                {
+                    card.matchedSide = Card.MatchedSide.Right;
+                    parentCard.matchedSide = Card.MatchedSide.Left;
+                    OnDroppedCardMatch(card, parentCard, cardConnector);
+                }
+
+                else
+                {
+                    Debug.Log($"not match {cardTokens[0]} with {parentTokens[0]}");
+                    card.TweenBack(GameplayManager.Instance.player.OnCardFinishTweenBack);
+                }
+            }
+
+            else if (cardConnector.cardConnectorType == CardConnector.CardConnectorType.Bottom)
             {
                 if (cardTokens[0] == parentTokens[1])
                 {
@@ -379,35 +471,36 @@ public class BoardManager : MonoBehaviour
                     card.TweenBack(GameplayManager.Instance.player.OnCardFinishTweenBack);
                 }
             }
-            
-            else if (cardConnector.cardConnectorType == CardConnector.CardConnectorType.TopLeft)
-            {
-                if (cardTokens[0] == parentTokens[0])
-                {
-                    card.matchedSide = Card.MatchedSide.Left;
-                    parentCard.matchedSide = Card.MatchedSide.Left;
-                    parentCard.matched = true;
-                    OnDroppedCardMatch(card, parentCard, cardConnector);
-                }
 
-                else
-                {
-                    card.TweenBack(GameplayManager.Instance.player.OnCardFinishTweenBack);
-                }
-            }
-
-            else
+            else if (cardConnector.cardConnectorType == CardConnector.CardConnectorType.BottomLeft)
             {
                 if (cardTokens[1] == parentTokens[1])
                 {
                     card.matchedSide = Card.MatchedSide.Right;
                     parentCard.matchedSide = Card.MatchedSide.Right;
-                    parentCard.matched = true;
                     OnDroppedCardMatch(card, parentCard, cardConnector);
                 }
 
                 else
                 {
+                    Debug.Log($"not match {cardTokens[1]} with {parentTokens[1]}");
+                    card.TweenBack(GameplayManager.Instance.player.OnCardFinishTweenBack);
+                }
+            }
+            
+
+            else
+            {
+                if (cardTokens[0] == parentTokens[1])
+                {
+                    card.matchedSide = Card.MatchedSide.Left;
+                    parentCard.matchedSide = Card.MatchedSide.Right;
+                    OnDroppedCardMatch(card, parentCard, cardConnector);
+                }
+
+                else
+                {
+                    Debug.Log($"not match {cardTokens[0]} with {parentTokens[1]}");
                     card.TweenBack(GameplayManager.Instance.player.OnCardFinishTweenBack);
                 }
             }
@@ -732,6 +825,7 @@ public class BoardManager : MonoBehaviour
         GameplayManager.Instance.player.handCards.Remove(card);
         LeanPool.Despawn(card);
 
+        pairingCard.matched = true;
         spawnedCard.matched = true;
         spawnedCard.canvasGroup.alpha = 1;
         spawnedCard.canvasGroup.blocksRaycasts = true;

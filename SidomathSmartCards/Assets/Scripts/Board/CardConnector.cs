@@ -109,8 +109,20 @@ public class CardConnector : MonoBehaviour, ICanvasRaycastFilter
                         animator.SetTrigger(HighlightType.Highlight.ToString());
                     }
                 }
-                
+            }
 
+            else
+            {
+                if (collision.TryGetComponent(out CardConnector cardConnector))
+                {
+                    Debug.Log($"card connector tile {cardConnector.cardConnectorTileIndex}");
+                    Card _collidedParentCard = transform.parent.parent.parent.GetComponent<Card>();
+                    if (_collidedParentCard.GetInstanceID() != GetInstanceID())
+                    {
+                        //Debug.Log($"collided with different card guid, this id {GetInstanceID()} & other card id {_collidedParentCard.GetInstanceID()}");
+                        cardConnector.gameObject.SetActive(false);
+                    }
+                }
             }
         }
     }

@@ -253,7 +253,7 @@ public class GameplayManager : MonoBehaviour
             pickedTile._droppable = false;
 
             //pick random position on tiles
-            int randomPos = Random.Range(0, pickedTile.tilePoints.Count - 1);
+            int randomPos = Random.Range(/*0, pickedTile.tilePoints.Count - 1*/2,3);
             Transform point = pickedTile.tilePoints[randomPos];
 
             //spawn card on picked tile and drop last card from dealer deck as initiator

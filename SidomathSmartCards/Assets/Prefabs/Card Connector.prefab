@@ -256,7 +256,7 @@ BoxCollider2D:
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 72, y: 128}
+  m_Size: {x: 64, y: 116}
   m_EdgeRadius: 0
 --- !u!114 &5272033275292464322
 MonoBehaviour:
@@ -277,6 +277,7 @@ MonoBehaviour:
   droppable: 1
   dropped: 0
   cardConnectorTileIndex: 
+  draggedCard: {fileID: 0}
   tileBelow: {fileID: 0}
 --- !u!50 &6390486690736468890
 Rigidbody2D:
@@ -592,7 +593,7 @@ BoxCollider2D:
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 128, y: 64}
+  m_Size: {x: 116, y: 54}
   m_EdgeRadius: 0
 --- !u!114 &4303098672853338601
 MonoBehaviour:
@@ -613,6 +614,7 @@ MonoBehaviour:
   droppable: 1
   dropped: 0
   cardConnectorTileIndex: 
+  draggedCard: {fileID: 0}
   tileBelow: {fileID: 0}
 --- !u!50 &6543380630814057078
 Rigidbody2D:
@@ -741,7 +743,7 @@ BoxCollider2D:
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 128, y: 64}
+  m_Size: {x: 116, y: 54}
   m_EdgeRadius: 0
 --- !u!114 &3497983775873326536
 MonoBehaviour:
@@ -762,6 +764,7 @@ MonoBehaviour:
   droppable: 1
   dropped: 0
   cardConnectorTileIndex: 
+  draggedCard: {fileID: 0}
   tileBelow: {fileID: 0}
 --- !u!50 &1607564141608187298
 Rigidbody2D:
@@ -1040,7 +1043,7 @@ BoxCollider2D:
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 72, y: 128}
+  m_Size: {x: 64, y: 116}
   m_EdgeRadius: 0
 --- !u!114 &3264832651311479208
 MonoBehaviour:
@@ -1061,6 +1064,7 @@ MonoBehaviour:
   droppable: 1
   dropped: 0
   cardConnectorTileIndex: 
+  draggedCard: {fileID: 0}
   tileBelow: {fileID: 0}
 --- !u!50 &5039658125642358473
 Rigidbody2D:
@@ -1490,7 +1494,7 @@ BoxCollider2D:
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 128, y: 64}
+  m_Size: {x: 116, y: 54}
   m_EdgeRadius: 0
 --- !u!114 &8419465210932841038
 MonoBehaviour:
@@ -1511,6 +1515,7 @@ MonoBehaviour:
   droppable: 1
   dropped: 0
   cardConnectorTileIndex: 
+  draggedCard: {fileID: 0}
   tileBelow: {fileID: 0}
 --- !u!50 &5518935621740709771
 Rigidbody2D:
@@ -1789,7 +1794,7 @@ BoxCollider2D:
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 128, y: 64}
+  m_Size: {x: 116, y: 54}
   m_EdgeRadius: 0
 --- !u!114 &8777153908868205796
 MonoBehaviour:
@@ -1810,6 +1815,7 @@ MonoBehaviour:
   droppable: 1
   dropped: 0
   cardConnectorTileIndex: 
+  draggedCard: {fileID: 0}
   tileBelow: {fileID: 0}
 --- !u!50 &1708298408664473013
 Rigidbody2D:

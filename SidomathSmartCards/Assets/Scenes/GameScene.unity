@@ -1376,6 +1376,10 @@ PrefabInstance:
       propertyPath: playerPanelParent
       value: 
       objectReference: {fileID: 1876024090}
+    - target: {fileID: 8571619136909029457, guid: dc49d119b380ef8439b2340bca971df1, type: 3}
+      propertyPath: distributeCardTime
+      value: 0.12
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: dc49d119b380ef8439b2340bca971df1, type: 3}
 --- !u!1001 &2817137552385697366
