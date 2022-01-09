@@ -27,9 +27,7 @@ public class BoardManager : MonoBehaviour
     [SerializeField] private string mostLeftTileIndex;
     [SerializeField] private string mostRightTileIndex;
     public List<Tile> droppedTile = new List<Tile>();
-    public List<Card> trackCardList = new List<Card>();
-    public List<Card> leftCardList = new List<Card>();
-    public List<Card> rightCardList = new List<Card>();
+    public List<Card> droppableCardList = new List<Card>();
     public List<Card> allDroppedCards = new List<Card>();
     public Card mostLeftCard = null;
     public Card mostRightCard = null;
@@ -61,7 +59,7 @@ public class BoardManager : MonoBehaviour
         tilesOnBoards = new Tile[width, height];
         tileDatas = new TileData[width];
         allDroppedCards = new List<Card>();
-        trackCardList = new List<Card>();
+        droppableCardList = new List<Card>();
         //GameObject container = new GameObject();
         //GameObject boardContainer = LeanPool.Spawn(new GameObject(), boardParent);
         //boardContainer.name = "Board Container";
@@ -705,6 +703,31 @@ public class BoardManager : MonoBehaviour
         }
     }
 
+    public void AddCardToDroppableList(Card card, Card parentCard)
+    {
+        switch (parentCard.matchedSide)
+        {
+            case Card.MatchedSide.None:
+                droppableCardList.Add(card);
+                droppableCardList.Add(parentCard);
+                break;
+            case Card.MatchedSide.Left:
+                droppableCardList.Add(card);
+                droppableCardList.Add(parentCard);
+                break;
+            case Card.MatchedSide.Right:
+                droppableCardList.Add(card);
+                droppableCardList.Add(parentCard);
+                break;
+            case Card.MatchedSide.Both:
+                droppableCardList.Remove(parentCard);
+                droppableCardList.Add(card);
+                break;
+            default:
+                break;
+        }
+    }
+
     public void OnDroppedCardMatch(Card card, Card pairingCard, CardConnector cardConnector)
     {
         List<Transform> tileDropPoints = new List<Transform>(cardConnector.tileBelow.tilePoints);
@@ -819,8 +842,6 @@ public class BoardManager : MonoBehaviour
             default:
                 break;
         }
-
-        
     }
 
     public void OnDoneMatchingCards(Card card, Card spawnedCard, Card pairingCard)
@@ -835,6 +856,7 @@ public class BoardManager : MonoBehaviour
         spawnedCard.canvasGroup.alpha = 1;
         spawnedCard.canvasGroup.blocksRaycasts = true;
         spawnedCard.transform.SetParent(spawnedCard.currentTile.transform);
+        AddCardToDroppableList(spawnedCard, pairingCard);
 
         switch (pairingCard.facing)
         {
@@ -854,186 +876,10 @@ public class BoardManager : MonoBehaviour
                 break;
         }
 
-        //AddToCardList(spawnedCard);
-        AddCardToList(spawnedCard, ResetDroppableAreas);
-        //ResetDroppableAreas();
+        ResetDroppableAreas();
     }
 
-    public void AddToCardList(Card card)
-    {
-        if (trackCardList.Count > 1)
-        {
-            //int pairingCardIndex = trackCardList.IndexOf(card.pairingCard);
-
-            //Debug.Log($"current pairing card index {pairingCardIndex}");
-
-            //if(pairingCardIndex == trackCardList.Count - 1)
-            //{
-            //    trackCardList.Add(card);
-            //    mostRightCard = card;
-            //}
-
-            //else
-            //{
-            //    for (int i = trackCardList.Count - 1; i >= 0; i--)
-            //    {
-            //        //Card _card = trackCardList[i];
-            //        //trackCardList[i + 1] = _card;
-
-            //        if (i == trackCardList.Count - 1)
-            //        {
-            //            //trackCardList[0] = card;
-            //            mostLeftCard = card;
-            //            trackCardList[i] = null;
-            //            Debug.Log($"most left card == {mostLeftCard._cardPairType}");
-            //            continue;
-            //        }
-
-            //        else
-            //        {
-            //            Card _card = trackCardList[i];
-            //            trackCardList[i + 1] = _card;
-
-            //            if (i == 0)
-            //            {
-            //                trackCardList[0] = mostLeftCard;
-            //                break;
-            //            }
-            //        }
-            //    }
-            //}
-
-            if (card.currentCardConnector.cardConnectorType == CardConnector.CardConnectorType.Top ||
-            card.currentCardConnector.cardConnectorType == CardConnector.CardConnectorType.TopRight ||
-            card.currentCardConnector.cardConnectorType == CardConnector.CardConnectorType.TopLeft)
-            {
-                trackCardList.Add(card);
-
-                for (int i = trackCardList.Count - 1; i >= 0; i--)
-                {
-                    //Card _card = trackCardList[i];
-                    //trackCardList[i + 1] = _card;
-
-                    if (i == trackCardList.Count - 1)
-                    {
-                        //trackCardList[0] = card;
-                        mostLeftCard = card;
-                        trackCardList[i] = null;
-                        Debug.Log($"most left index = {i}");
-                        Debug.Log($"most left card == {mostLeftCard._cardPairType}");
-                        continue;
-                    }
-
-                    Card _card = trackCardList[i];
-                    trackCardList[i + 1] = _card;
-                    trackCardList[i] = null;
-
-                    if (i == 0)
-                    {
-                        trackCardList[i] = null;
-                        trackCardList[i] = mostLeftCard;
-                        break;
-                    }
-                }
-
-                //trackCardList[0] = mostLeftCard;
-            }
-
-            else
-            {
-                trackCardList.Add(card);
-                mostRightCard = card;
-            }
-        }
-
-        //else if (trackCardList.Count == 1)
-        //{
-        //    if (card.currentCardConnector.cardConnectorType == CardConnector.CardConnectorType.Top ||
-        //    card.currentCardConnector.cardConnectorType == CardConnector.CardConnectorType.TopRight ||
-        //    card.currentCardConnector.cardConnectorType == CardConnector.CardConnectorType.TopLeft)
-        //    {
-        //        trackCardList.Add(card);
-
-        //        for (int i = trackCardList.Count - 1; i >= 0; i--)
-        //        {
-        //            //Card _card = trackCardList[i];
-        //            //trackCardList[i + 1] = _card;
-
-        //            if (i == trackCardList.Count - 1)
-        //            {
-        //                //trackCardList[0] = card;
-        //                mostLeftCard = card;
-        //                trackCardList[i] = null;
-        //                Debug.Log($"most left card == {mostLeftCard._cardPairType}");
-        //                continue;
-        //            }
-
-        //            else
-        //            {
-        //                Card _card = trackCardList[i];
-        //                trackCardList[i + 1] = _card;
-
-        //                if (i == 0)
-        //                {
-        //                    trackCardList[0] = mostLeftCard;
-        //                    break;
-        //                }
-        //            }
-        //        }
-
-        //        //trackCardList[0] = mostLeftCard;
-        //    }
-
-        //    else
-        //    {
-        //        trackCardList.Add(card);
-        //        mostRightCard = card;
-        //    }
-
-
-        //}
-
-        else
-        {
-            trackCardList.Add(card);
-            mostRightCard = card;
-            mostLeftCard = card;
-        }
-    }
-
-    public void AddCardToList(Card card, Action action = null)
-    {
-        Card pairingCard = card.pairingCard;
-        switch (pairingCard.matchedSide)
-        {
-            case Card.MatchedSide.Right:
-                rightCardList.Add(card);
-                mostRightCard = rightCardList[rightCardList.Count - 1];
-                break;
-            case Card.MatchedSide.Left:
-                leftCardList.Add(card);
-                mostLeftCard = leftCardList[leftCardList.Count - 1];
-                break;
-            case Card.MatchedSide.Both:
-                if (card.currentCardConnector.cardConnectorType == CardConnector.CardConnectorType.Top ||
-                    card.currentCardConnector.cardConnectorType == CardConnector.CardConnectorType.TopRight ||
-                    card.currentCardConnector.cardConnectorType == CardConnector.CardConnectorType.TopLeft)
-                {
-                    leftCardList.Add(card);
-                    mostLeftCard = leftCardList[leftCardList.Count - 1];
-                }
-                else
-                {
-                    rightCardList.Add(card);
-                    mostRightCard = rightCardList[rightCardList.Count - 1];
-                }
-                break;
-            default:
-                break;
-        }
-
-        action?.Invoke();
-    }
+    
 
 
     public void ResetDroppableAreas()
