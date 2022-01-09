@@ -263,21 +263,25 @@ public class GameplayManager : MonoBehaviour
                 case 0:
                     spawnedCard = SpawnCardOnBoard(card, pickedTile, point, Tile.DroppedPoint.Top, Tile.TopBottomSpecific.Mid, null, null);
                     MoveCardToBoard(card, spawnedCard, point, 0.6f, BoardManager.Instance.ResetDroppableAreas, SetupAllPlayers());
+                    //BoardManager.Instance.AddToCardList(spawnedCard);
                     break;
 
                 case 1:
                     spawnedCard = SpawnCardOnBoard(card, pickedTile, point, Tile.DroppedPoint.Bottom, Tile.TopBottomSpecific.Mid, null, null);
                     MoveCardToBoard(card, spawnedCard, point, 0.6f, BoardManager.Instance.ResetDroppableAreas, SetupAllPlayers());
+                    //BoardManager.Instance.AddToCardList(spawnedCard);
                     break;
 
                 case 2:
                     spawnedCard = SpawnCardOnBoard(card, pickedTile, point, Tile.DroppedPoint.Right, Tile.TopBottomSpecific.Mid, null, null);
                     MoveCardToBoard(card, spawnedCard, point, 0.6f, BoardManager.Instance.ResetDroppableAreas, SetupAllPlayers());
+                    //BoardManager.Instance.AddToCardList(spawnedCard);
                     break;
 
                 case 3:
                     spawnedCard = SpawnCardOnBoard(card, pickedTile, point, Tile.DroppedPoint.Left, Tile.TopBottomSpecific.Mid, null, null);
                     MoveCardToBoard(card, spawnedCard, point, 0.6f, BoardManager.Instance.ResetDroppableAreas, SetupAllPlayers());
+                    //BoardManager.Instance.AddToCardList(spawnedCard);
                     break;
 
                 default:

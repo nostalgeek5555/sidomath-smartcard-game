@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using NaughtyAttributes;
 using Lean.Pool;
+using System.Linq;
 
 [Serializable]
 public class BoardManager : MonoBehaviour
@@ -26,6 +27,9 @@ public class BoardManager : MonoBehaviour
     [SerializeField] private string mostLeftTileIndex;
     [SerializeField] private string mostRightTileIndex;
     public List<Tile> droppedTile = new List<Tile>();
+    public List<Card> trackCardList = new List<Card>();
+    public List<Card> leftCardList = new List<Card>();
+    public List<Card> rightCardList = new List<Card>();
     public List<Card> allDroppedCards = new List<Card>();
     public Card mostLeftCard = null;
     public Card mostRightCard = null;
@@ -57,7 +61,7 @@ public class BoardManager : MonoBehaviour
         tilesOnBoards = new Tile[width, height];
         tileDatas = new TileData[width];
         allDroppedCards = new List<Card>();
-
+        trackCardList = new List<Card>();
         //GameObject container = new GameObject();
         //GameObject boardContainer = LeanPool.Spawn(new GameObject(), boardParent);
         //boardContainer.name = "Board Container";
@@ -825,6 +829,7 @@ public class BoardManager : MonoBehaviour
         GameplayManager.Instance.player.handCards.Remove(card);
         LeanPool.Despawn(card);
 
+        spawnedCard.pairingCard = pairingCard;
         pairingCard.matched = true;
         spawnedCard.matched = true;
         spawnedCard.canvasGroup.alpha = 1;
@@ -849,7 +854,185 @@ public class BoardManager : MonoBehaviour
                 break;
         }
 
-        ResetDroppableAreas();
+        //AddToCardList(spawnedCard);
+        AddCardToList(spawnedCard, ResetDroppableAreas);
+        //ResetDroppableAreas();
+    }
+
+    public void AddToCardList(Card card)
+    {
+        if (trackCardList.Count > 1)
+        {
+            //int pairingCardIndex = trackCardList.IndexOf(card.pairingCard);
+
+            //Debug.Log($"current pairing card index {pairingCardIndex}");
+
+            //if(pairingCardIndex == trackCardList.Count - 1)
+            //{
+            //    trackCardList.Add(card);
+            //    mostRightCard = card;
+            //}
+
+            //else
+            //{
+            //    for (int i = trackCardList.Count - 1; i >= 0; i--)
+            //    {
+            //        //Card _card = trackCardList[i];
+            //        //trackCardList[i + 1] = _card;
+
+            //        if (i == trackCardList.Count - 1)
+            //        {
+            //            //trackCardList[0] = card;
+            //            mostLeftCard = card;
+            //            trackCardList[i] = null;
+            //            Debug.Log($"most left card == {mostLeftCard._cardPairType}");
+            //            continue;
+            //        }
+
+            //        else
+            //        {
+            //            Card _card = trackCardList[i];
+            //            trackCardList[i + 1] = _card;
+
+            //            if (i == 0)
+            //            {
+            //                trackCardList[0] = mostLeftCard;
+            //                break;
+            //            }
+            //        }
+            //    }
+            //}
+
+            if (card.currentCardConnector.cardConnectorType == CardConnector.CardConnectorType.Top ||
+            card.currentCardConnector.cardConnectorType == CardConnector.CardConnectorType.TopRight ||
+            card.currentCardConnector.cardConnectorType == CardConnector.CardConnectorType.TopLeft)
+            {
+                trackCardList.Add(card);
+
+                for (int i = trackCardList.Count - 1; i >= 0; i--)
+                {
+                    //Card _card = trackCardList[i];
+                    //trackCardList[i + 1] = _card;
+
+                    if (i == trackCardList.Count - 1)
+                    {
+                        //trackCardList[0] = card;
+                        mostLeftCard = card;
+                        trackCardList[i] = null;
+                        Debug.Log($"most left index = {i}");
+                        Debug.Log($"most left card == {mostLeftCard._cardPairType}");
+                        continue;
+                    }
+
+                    Card _card = trackCardList[i];
+                    trackCardList[i + 1] = _card;
+                    trackCardList[i] = null;
+
+                    if (i == 0)
+                    {
+                        trackCardList[i] = null;
+                        trackCardList[i] = mostLeftCard;
+                        break;
+                    }
+                }
+
+                //trackCardList[0] = mostLeftCard;
+            }
+
+            else
+            {
+                trackCardList.Add(card);
+                mostRightCard = card;
+            }
+        }
+
+        //else if (trackCardList.Count == 1)
+        //{
+        //    if (card.currentCardConnector.cardConnectorType == CardConnector.CardConnectorType.Top ||
+        //    card.currentCardConnector.cardConnectorType == CardConnector.CardConnectorType.TopRight ||
+        //    card.currentCardConnector.cardConnectorType == CardConnector.CardConnectorType.TopLeft)
+        //    {
+        //        trackCardList.Add(card);
+
+        //        for (int i = trackCardList.Count - 1; i >= 0; i--)
+        //        {
+        //            //Card _card = trackCardList[i];
+        //            //trackCardList[i + 1] = _card;
+
+        //            if (i == trackCardList.Count - 1)
+        //            {
+        //                //trackCardList[0] = card;
+        //                mostLeftCard = card;
+        //                trackCardList[i] = null;
+        //                Debug.Log($"most left card == {mostLeftCard._cardPairType}");
+        //                continue;
+        //            }
+
+        //            else
+        //            {
+        //                Card _card = trackCardList[i];
+        //                trackCardList[i + 1] = _card;
+
+        //                if (i == 0)
+        //                {
+        //                    trackCardList[0] = mostLeftCard;
+        //                    break;
+        //                }
+        //            }
+        //        }
+
+        //        //trackCardList[0] = mostLeftCard;
+        //    }
+
+        //    else
+        //    {
+        //        trackCardList.Add(card);
+        //        mostRightCard = card;
+        //    }
+
+
+        //}
+
+        else
+        {
+            trackCardList.Add(card);
+            mostRightCard = card;
+            mostLeftCard = card;
+        }
+    }
+
+    public void AddCardToList(Card card, Action action = null)
+    {
+        Card pairingCard = card.pairingCard;
+        switch (pairingCard.matchedSide)
+        {
+            case Card.MatchedSide.Right:
+                rightCardList.Add(card);
+                mostRightCard = rightCardList[rightCardList.Count - 1];
+                break;
+            case Card.MatchedSide.Left:
+                leftCardList.Add(card);
+                mostLeftCard = leftCardList[leftCardList.Count - 1];
+                break;
+            case Card.MatchedSide.Both:
+                if (card.currentCardConnector.cardConnectorType == CardConnector.CardConnectorType.Top ||
+                    card.currentCardConnector.cardConnectorType == CardConnector.CardConnectorType.TopRight ||
+                    card.currentCardConnector.cardConnectorType == CardConnector.CardConnectorType.TopLeft)
+                {
+                    leftCardList.Add(card);
+                    mostLeftCard = leftCardList[leftCardList.Count - 1];
+                }
+                else
+                {
+                    rightCardList.Add(card);
+                    mostRightCard = rightCardList[rightCardList.Count - 1];
+                }
+                break;
+            default:
+                break;
+        }
+
+        action?.Invoke();
     }
 
 

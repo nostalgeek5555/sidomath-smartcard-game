@@ -57,6 +57,7 @@ public class Card : MonoBehaviour, IDragHandler, IBeginDragHandler, IEndDragHand
     private GameObject placeholder = null;
 
     [Header("Dropped Card Properties")]
+    public Card pairingCard = null;
     public GraphicRaycaster graphicRaycaster = null;
     public Tile currentTile = null;
     public string tileIndex;
