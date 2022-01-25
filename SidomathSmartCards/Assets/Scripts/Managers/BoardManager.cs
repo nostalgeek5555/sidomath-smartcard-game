@@ -10,6 +10,8 @@ using System.Linq;
 public class BoardManager : MonoBehaviour
 {
     public static BoardManager Instance;
+    public static event Action<Card, Card> OnAfterCardMatch;
+
 
     public Transform boardParent;
     public Transform topLeftPoint;
@@ -32,9 +34,16 @@ public class BoardManager : MonoBehaviour
     public Card mostLeftCard = null;
     public Card mostRightCard = null;
 
-    public event Action OnCardMatch;
+    private void OnEnable()
+    {
+        OnAfterCardMatch += HandleAfterCardMatch;
+    }
 
-    
+    private void OnDisable()
+    {
+        OnAfterCardMatch -= HandleAfterCardMatch;
+    }
+
     private void Awake()
     {
         if (Instance == null)
@@ -388,123 +397,145 @@ public class BoardManager : MonoBehaviour
 
        if (parentCard.matchedSide == Card.MatchedSide.None)
        {
-            if (cardConnector.cardConnectorType == CardConnector.CardConnectorType.Top)
+            switch (parentCard.facing)
             {
-                if (cardTokens[1] == parentTokens[0])
-                {
-                    card.matchedSide = Card.MatchedSide.Right;
-                    parentCard.matchedSide = Card.MatchedSide.Left;
-                    parentCard.matched = true;
-                    OnDroppedCardMatch(card, parentCard, cardConnector);
-                }
-
-                else
-                {
-                    card.TweenBack(GameplayManager.Instance.player.OnCardFinishTweenBack);
-                }
-            }
-
-            else if (cardConnector.cardConnectorType == CardConnector.CardConnectorType.TopRight)
-            {
-                switch (parentCard.facing)
-                {
-                    case Card.Facing.Vertical:
-                        if (cardTokens[0] == parentTokens[0])
-                        {
-                            card.matchedSide = Card.MatchedSide.Left;
-                            parentCard.matchedSide = Card.MatchedSide.Left;
-                            OnDroppedCardMatch(card, parentCard, cardConnector);
-                        }
-
-                        else
-                        {
-                            Debug.Log($"not match {cardTokens[1]} with {parentTokens[0]}");
-                            card.TweenBack(GameplayManager.Instance.player.OnCardFinishTweenBack);
-                        }
-                        break;
-
-                    case Card.Facing.Horizontal:
+                case Card.Facing.Vertical:
+                    if (cardConnector.cardConnectorType == CardConnector.CardConnectorType.Top
+                        || cardConnector.cardConnectorType == CardConnector.CardConnectorType.TopLeft)
+                    {
                         if (cardTokens[1] == parentTokens[0])
                         {
                             card.matchedSide = Card.MatchedSide.Right;
                             parentCard.matchedSide = Card.MatchedSide.Left;
+                            parentCard.matched = true;
                             OnDroppedCardMatch(card, parentCard, cardConnector);
                         }
 
                         else
                         {
-                            Debug.Log($"not match {cardTokens[1]} with {parentTokens[0]}");
                             card.TweenBack(GameplayManager.Instance.player.OnCardFinishTweenBack);
                         }
-                        break;
-                    default:
-                        break;
-                }
-            }
+                    }
 
-            else if (cardConnector.cardConnectorType == CardConnector.CardConnectorType.TopLeft)
-            {
-                if (cardTokens[1] == parentTokens[0])
-                {
-                    card.matchedSide = Card.MatchedSide.Right;
-                    parentCard.matchedSide = Card.MatchedSide.Left;
-                    OnDroppedCardMatch(card, parentCard, cardConnector);
-                }
+                    else if (cardConnector.cardConnectorType == CardConnector.CardConnectorType.BottomLeft)
+                    {
+                        if (cardTokens[1] == parentTokens[1])
+                        {
+                            card.matchedSide = Card.MatchedSide.Right;
+                            parentCard.matchedSide = Card.MatchedSide.Right;
+                            parentCard.matched = true;
+                            OnDroppedCardMatch(card, parentCard, cardConnector);
+                        }
 
-                else
-                {
-                    Debug.Log($"not match {cardTokens[0]} with {parentTokens[0]}");
-                    card.TweenBack(GameplayManager.Instance.player.OnCardFinishTweenBack);
-                }
-            }
+                        else
+                        {
+                            card.TweenBack(GameplayManager.Instance.player.OnCardFinishTweenBack);
+                        }
+                    }
 
-            else if (cardConnector.cardConnectorType == CardConnector.CardConnectorType.Bottom)
-            {
-                if (cardTokens[0] == parentTokens[1])
-                {
-                    card.matchedSide = Card.MatchedSide.Left;
-                    parentCard.matchedSide = Card.MatchedSide.Right;
-                    parentCard.matched = true;
-                    OnDroppedCardMatch(card, parentCard, cardConnector);
-                }
+                    else if (cardConnector.cardConnectorType == CardConnector.CardConnectorType.Bottom
+                            || cardConnector.cardConnectorType == CardConnector.CardConnectorType.BottomRight)
+                    {
+                        if (cardTokens[0] == parentTokens[1])
+                        {
+                            card.matchedSide = Card.MatchedSide.Left;
+                            parentCard.matchedSide = Card.MatchedSide.Right;
+                            parentCard.matched = true;
+                            OnDroppedCardMatch(card, parentCard, cardConnector);
+                        }
 
-                else
-                {
-                    card.TweenBack(GameplayManager.Instance.player.OnCardFinishTweenBack);
-                }
-            }
+                        else
+                        {
+                            card.TweenBack(GameplayManager.Instance.player.OnCardFinishTweenBack);
+                        }
+                    }
 
-            else if (cardConnector.cardConnectorType == CardConnector.CardConnectorType.BottomLeft)
-            {
-                if (cardTokens[1] == parentTokens[1])
-                {
-                    card.matchedSide = Card.MatchedSide.Right;
-                    parentCard.matchedSide = Card.MatchedSide.Right;
-                    OnDroppedCardMatch(card, parentCard, cardConnector);
-                }
+                    else
+                    {
+                        if (cardTokens[0] == parentTokens[0])
+                        {
+                            card.matchedSide = Card.MatchedSide.Left;
+                            parentCard.matchedSide = Card.MatchedSide.Left;
+                            parentCard.matched = true;
+                            OnDroppedCardMatch(card, parentCard, cardConnector);
+                        }
 
-                else
-                {
-                    Debug.Log($"not match {cardTokens[1]} with {parentTokens[1]}");
-                    card.TweenBack(GameplayManager.Instance.player.OnCardFinishTweenBack);
-                }
-            }
-            
+                        else
+                        {
+                            card.TweenBack(GameplayManager.Instance.player.OnCardFinishTweenBack);
+                        }
+                    }
 
-            else
-            {
-                if (cardTokens[0] == parentTokens[1])
-                {
-                    card.matchedSide = Card.MatchedSide.Left;
-                    parentCard.matchedSide = Card.MatchedSide.Right;
-                    OnDroppedCardMatch(card, parentCard, cardConnector);
-                }
+                    break;
+                case Card.Facing.Horizontal:
+                    if (cardConnector.cardConnectorType == CardConnector.CardConnectorType.Top
+                        || cardConnector.cardConnectorType == CardConnector.CardConnectorType.TopRight)
+                    {
+                        if (cardTokens[1] == parentTokens[0])
+                        {
+                            card.matchedSide = Card.MatchedSide.Right;
+                            parentCard.matchedSide = Card.MatchedSide.Left;
+                            parentCard.matched = true;
+                            OnDroppedCardMatch(card, parentCard, cardConnector);
+                        }
 
-                else
-                {
-                    Debug.Log($"not match {cardTokens[0]} with {parentTokens[1]}");
-                    card.TweenBack(GameplayManager.Instance.player.OnCardFinishTweenBack);
-                }
+                        else
+                        {
+                            card.TweenBack(GameplayManager.Instance.player.OnCardFinishTweenBack);
+                        }
+                    }
+
+                    else if (cardConnector.cardConnectorType == CardConnector.CardConnectorType.BottomRight)
+                    {
+                        if (cardTokens[1] == parentTokens[1])
+                        {
+                            card.matchedSide = Card.MatchedSide.Right;
+                            parentCard.matchedSide = Card.MatchedSide.Right;
+                            parentCard.matched = true;
+                            OnDroppedCardMatch(card, parentCard, cardConnector);
+                        }
+
+                        else
+                        {
+                            card.TweenBack(GameplayManager.Instance.player.OnCardFinishTweenBack);
+                        }
+                    }
+
+                    else if (cardConnector.cardConnectorType == CardConnector.CardConnectorType.Bottom
+                            || cardConnector.cardConnectorType == CardConnector.CardConnectorType.BottomLeft)
+                    {
+                        if (cardTokens[0] == parentTokens[1])
+                        {
+                            card.matchedSide = Card.MatchedSide.Left;
+                            parentCard.matchedSide = Card.MatchedSide.Right;
+                            parentCard.matched = true;
+                            OnDroppedCardMatch(card, parentCard, cardConnector);
+                        }
+
+                        else
+                        {
+                            card.TweenBack(GameplayManager.Instance.player.OnCardFinishTweenBack);
+                        }
+                    }
+
+                    else
+                    {
+                        if (cardTokens[0] == parentTokens[0])
+                        {
+                            card.matchedSide = Card.MatchedSide.Left;
+                            parentCard.matchedSide = Card.MatchedSide.Left;
+                            parentCard.matched = true;
+                            OnDroppedCardMatch(card, parentCard, cardConnector);
+                        }
+
+                        else
+                        {
+                            card.TweenBack(GameplayManager.Instance.player.OnCardFinishTweenBack);
+                        }
+                    }
+                    break;
+                default:
+                    break;
             }
        }
 
@@ -730,7 +761,6 @@ public class BoardManager : MonoBehaviour
 
     public void OnDroppedCardMatch(Card card, Card pairingCard, CardConnector cardConnector)
     {
-        List<Transform> tileDropPoints = new List<Transform>(cardConnector.tileBelow.tilePoints);
         switch (pairingCard.facing)
         {
             case Card.Facing.Vertical:
@@ -846,16 +876,29 @@ public class BoardManager : MonoBehaviour
 
     public void OnDoneMatchingCards(Card card, Card spawnedCard, Card pairingCard)
     {
+        card.draggable = false;
         spawnedCard.matchedSide = card.matchedSide;
-        GameplayManager.Instance.player.handCards.Remove(card);
-        LeanPool.Despawn(card);
-
         spawnedCard.pairingCard = pairingCard;
         pairingCard.matched = true;
         spawnedCard.matched = true;
-        spawnedCard.canvasGroup.alpha = 1;
         spawnedCard.canvasGroup.blocksRaycasts = true;
         spawnedCard.transform.SetParent(spawnedCard.currentTile.transform);
+
+        switch (GameplayManager.Instance.actorGettingTurn.actorRole)
+        {
+            case ActorBase.Role.Player:
+                spawnedCard.canvasGroup.alpha = 1;
+                break;
+            case ActorBase.Role.Ai:
+                spawnedCard.canvasGroup.alpha = 0;
+                break;
+            default:
+                break;
+        }
+
+        GameplayManager.Instance.player.handCardGroup.enabled = true;
+        GameplayManager.Instance.player.handCardFitter.enabled = true;
+
         AddCardToDroppableList(spawnedCard, pairingCard);
 
         switch (pairingCard.facing)
@@ -876,10 +919,36 @@ public class BoardManager : MonoBehaviour
                 break;
         }
 
-        ResetDroppableAreas();
+        OnAfterCardMatch?.Invoke(card, spawnedCard);
+        
     }
 
-    
+    public void HandleAfterCardMatch(Card card, Card spawnedCard)
+    {
+        //after all handler for matching card done their job, give signal to state controller for shifting turn
+        switch (GameplayManager.Instance.actorGettingTurn.actorRole)
+        {
+            case ActorBase.Role.Player:
+                Debug.Log($"On matching end, role {GameplayManager.Instance.actorGettingTurn.actorRole}");
+                GameplayManager.Instance.player.handCards.Remove(card);
+                LeanPool.Despawn(card);
+                ResetDroppableAreas();
+
+                Player player = GameplayManager.Instance.actorGettingTurn.GetComponent<Player>();
+                player.OnMatchingCardEnd(spawnedCard);
+                break;
+
+            case ActorBase.Role.Ai:
+                Debug.Log($"On matching end, role {GameplayManager.Instance.actorGettingTurn.actorRole}");
+                GameplayManager.Instance.MoveCardToBoard(card, spawnedCard, spawnedCard.currentCardConnector.transform, 0.6f, ResetDroppableAreas, null, GameplayManager.Instance.RemoveCard);
+
+                Ai ai = GameplayManager.Instance.actorGettingTurn.GetComponent<Ai>();
+                ai.OnMatchingCardEnd(spawnedCard);
+                break;
+            default:
+                break;
+        }
+    }
 
 
     public void ResetDroppableAreas()

@@ -19,53 +19,6 @@ public class CardConnector : MonoBehaviour, ICanvasRaycastFilter
         rectTransform = GetComponent<RectTransform>();  
     }
 
-    //public void OnDrop(PointerEventData eventData)
-    //{
-    //    Debug.Log("valid dropped");
-
-    //    if (eventData.pointerDrag != null && dropped == false)
-    //    {
-    //        if (draggedCard != null)
-    //        {
-    //            if (!CheckIfConnectedCardFlipped())
-    //            {
-    //                Card parentCard = transform.parent.parent.parent.GetComponent<Card>();
-    //                BoardManager.Instance.OnDropCard(draggedCard, parentCard, this);
-    //                Debug.Log("Dropped on valid card connector");
-    //            }
-
-    //            else
-    //            {
-    //                Debug.Log("on card flipped tween back card");
-    //                draggedCard.TweenBack(GameplayManager.Instance.player.OnCardFinishTweenBack);
-    //            }
-    //        }
-
-    //        //if (eventData.pointerDrag.TryGetComponent(out Card card))
-    //        //{
-                
-    //        //    if (!CheckIfConnectedCardFlipped())
-    //        //    {
-    //        //        Card parentCard = transform.parent.parent.parent.GetComponent<Card>();
-    //        //        BoardManager.Instance.OnDropCard(card, parentCard, this);
-    //        //        Debug.Log("Dropped on valid card connector");
-    //        //    }
-
-    //        //    else
-    //        //    {
-    //        //        Debug.Log("on card flipped tween back card");
-    //        //        card.TweenBack(GameplayManager.Instance.player.OnCardFinishTweenBack);
-    //        //    }
-    //        //}
-    //    }
-
-    //    else
-    //    {
-    //        draggedCard.TweenBack(GameplayManager.Instance.player.OnCardFinishTweenBack);
-    //        Debug.Log("nothing dragged");
-    //    }
-    //}
-
     public bool CheckIfConnectedCardFlipped()
     {
         Card parentCard = transform.parent.parent.parent.GetComponent<Card>();

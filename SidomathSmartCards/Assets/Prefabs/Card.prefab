@@ -575,7 +575,7 @@ GameObject:
   - component: {fileID: 5310488861813239411}
   m_Layer: 5
   m_Name: Card
-  m_TagString: Untagged
+  m_TagString: CardHand
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -636,6 +636,8 @@ MonoBehaviour:
   canvasGroup: {fileID: 3639983570370372617}
   animator: {fileID: 549766408472819103}
   player: {fileID: 0}
+  insideCardConnector: 0
+  onTweeningBack: 0
   mainConnector: {fileID: 0}
   currentCardConnector: {fileID: 0}
   topCardConnector: {fileID: 0}
@@ -644,6 +646,7 @@ MonoBehaviour:
   layoutElement: {fileID: 786005628119847570}
   originParent: {fileID: 0}
   placeholderParent: {fileID: 0}
+  pairingCard: {fileID: 0}
   graphicRaycaster: {fileID: 40701968366805592}
   currentTile: {fileID: 0}
   tileIndex: 

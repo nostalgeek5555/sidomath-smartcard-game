@@ -1,25 +1,20 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System;
 using UnityEngine;
 using UnityEngine.UI;
 using NaughtyAttributes;
 
-public class Player : MonoBehaviour
+public class Player : ActorBase
 {
     [Header("Player Properties")]
     public PlayerType playerType;
     public PlayerState playerState;
-    public int health = 3;
-    public bool turn = false;
-    public bool gameover = false;
-    public List<Card> handCards = new List<Card>();
 
 
     [Header("Player Card Displays")]
     public Transform handCardParent;
-    public HorizontalLayoutGroup handGroup;
-    public ContentSizeFitter handCardFitter;
     public GameObject cardHighlightPicker;
     [SerializeField] private int pickedCardId;
     [SerializeField] private int pickedCardSiblingIndex;
@@ -27,69 +22,49 @@ public class Player : MonoBehaviour
     public int prevCardIndex;
     public Card pickedCard;
 
-
-
-    public virtual void OnDisable()
-    {
-
-    }
-
     private void Start()
     {
-        //BoardManager.Instance.OnCardDropped += 
         InitPlayer();
     }
 
     public void InitPlayer()
     {
         playerState = PlayerState.PROCESSING;
+        health = 3;
         turn = false;
         gameover = false;
     }
 
-    public void RegisterHandCards()
+    public override void RegisterHandCards()
     {
-        if (playerType == PlayerType.Player)
-        {
-            handCardFitter.enabled = false;
-            handGroup.enabled = false;
-        }
-        handCards = new List<Card>();
-        if (transform.childCount > 0)
-        {
-            for (int i = 0; i < transform.childCount; i++)
-            {
-                if (transform.GetChild(i).GetComponent<Card>() != null)
-                {
-                    Card card = transform.GetChild(i).GetComponent<Card>();
-                    card.player = this;
-                    handCards.Add(card);
-                    Debug.Log($"card added id :: {card._cardId}");
-                    Debug.Log($"card added pair :: {card._cardPairType}");
-                    Debug.Log($"========================================");
-                }
-            }
-        }
+        handCardFitter.enabled = false;
+        handCardGroup.enabled = false;
+
+        base.RegisterHandCards();
+
     }
 
-    public virtual void StateController(PlayerState playerState)
+
+
+    public void StateController(PlayerState playerState)
     {
         switch(playerState)
         {
-            case PlayerState.PROCESSING:
-                break;
+
             case PlayerState.GET_TURN:
-                OnGettingTurn();
+                HandleGettingTurn();
                 break;
             case PlayerState.END_TURN:
-                OnEndingTurn();
+                HandleEndingTurn();
                 break;
             case PlayerState.SKIP_TURN:
-                OnSkipTurn();
+                HandleEndingTurn();
                 break;
             case PlayerState.WIN:
+                HandleWinning();
                 break;
             case PlayerState.GAME_OVER:
+                HandleGameOver();
                 break;
 
             default:
@@ -160,15 +135,35 @@ public class Player : MonoBehaviour
         }
     }
 
-    public virtual void OnProcessing()
+    public void OnMatchingCardEnd(Card card)
     {
+        if (!card.matched)
+        {
+            health--;
 
+            if (health > 0)
+            {
+                Debug.Log($"card not match, current player health {health}");
+                StateController(PlayerState.END_TURN);
+            }
+
+            else
+            {
+                StateController(PlayerState.GAME_OVER);
+            }
+        }
+
+        else
+        {
+            Debug.Log("card match");
+            StateController(PlayerState.END_TURN);
+        }
     }
 
-
-    public virtual void OnGettingTurn()
+    private void HandleGettingTurn()
     {
         playerState = PlayerState.GET_TURN;
+        GameplayManager.Instance.actorGettingTurn = GetComponent<ActorBase>();
 
         turn = true;
 
@@ -193,33 +188,24 @@ public class Player : MonoBehaviour
         
     }
 
-    public virtual void OnEndingTurn()
+    private void HandleEndingTurn()
     {
+        Debug.Log("player ending turn");
         playerState = PlayerState.END_TURN;
-
+        turn = false;
+        GameplayManager.Instance.StateController(GameplayManager.GameState.SHIFT_TURN);
     }
 
-    public virtual void OnSkipTurn()
-    {
-        playerState = PlayerState.SKIP_TURN;
-    }
-
-    public virtual void OnWinning()
+    private void HandleWinning()
     {
         playerState = PlayerState.WIN;
+        GameplayManager.Instance.StateController(GameplayManager.GameState.WIN);
     }
 
-    public void OnGameOver()
+    private void HandleGameOver()
     {
         playerState = PlayerState.GAME_OVER;
-    }
-
-    public virtual void NavigatingCards()
-    {
-        if (handCards.Count > 0 && playerState == PlayerState.GET_TURN)
-        {
-
-        }
+        GameplayManager.Instance.StateController(GameplayManager.GameState.GAME_OVER);
     }
 
 

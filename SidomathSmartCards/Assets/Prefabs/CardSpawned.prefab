@@ -90,7 +90,7 @@ GameObject:
   - component: {fileID: 1605071155569826666}
   m_Layer: 5
   m_Name: CardSpawned
-  m_TagString: Untagged
+  m_TagString: CardSpawned
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -128,6 +128,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   cardType: 0
+  facing: 0
   droppedPoint: 0
   topBottomSpecific: 0
   matchedSide: 0
@@ -148,17 +149,20 @@ MonoBehaviour:
   canvasGroup: {fileID: 1605071155569826666}
   animator: {fileID: 2263187923322369737}
   player: {fileID: 0}
+  insideCardConnector: 0
+  onTweeningBack: 0
+  mainConnector: {fileID: 0}
+  currentCardConnector: {fileID: 0}
+  topCardConnector: {fileID: 0}
+  bottomCardConnector: {fileID: 0}
+  collider2D: {fileID: 0}
   layoutElement: {fileID: 0}
   originParent: {fileID: 0}
   placeholderParent: {fileID: 0}
-  cardConnectorParent: []
-  cardConnectorPoints:
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
+  pairingCard: {fileID: 0}
+  graphicRaycaster: {fileID: 0}
+  currentTile: {fileID: 0}
+  tileIndex: 
 --- !u!95 &2263187923322369737
 Animator:
   serializedVersion: 3

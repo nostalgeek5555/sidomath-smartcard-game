@@ -63,11 +63,6 @@ public class Card : MonoBehaviour, IDragHandler, IBeginDragHandler, IEndDragHand
     public string tileIndex;
     
 
-    private void OnEnable()
-    {
-        
-    }
-
     private void OnDisable()
     {
         if (onHand)
@@ -109,43 +104,19 @@ public class Card : MonoBehaviour, IDragHandler, IBeginDragHandler, IEndDragHand
         
     }
 
-    public void Dropped()
-    {
-
-    }
-
-    public void Matched()
-    {
-
-    }
-
     public void OnBeginDrag(PointerEventData eventData)
     {
-        if (player.playerType == Player.PlayerType.Player && player.playerState == Player.PlayerState.GET_TURN)
+        if (player.playerState == Player.PlayerState.GET_TURN && draggable)
         {
             pointerEventData = eventData;
             collider2D.enabled = true;
             player.handCardFitter.enabled = false;
-            player.handGroup.enabled = false;
+            player.handCardGroup.enabled = false;
             canvasGroup.blocksRaycasts = false;
             canvasGroup.alpha = 0.6f;
             transform.localScale = new Vector3(0.7f, 0.7f, 0.7f);
             player.PickCard(this);
             Debug.Log($"Begin to drag card with id :: {cardId} & pair type {cardPairType}");
-
-            //placeholder = new GameObject();
-            //placeholder.transform.SetParent(transform.parent);
-            //LayoutElement _layoutElement = placeholder.AddComponent<LayoutElement>();
-            //_layoutElement.preferredWidth = layoutElement.preferredWidth;
-            //_layoutElement.preferredHeight = layoutElement.preferredHeight;
-            //_layoutElement.flexibleHeight = 0;
-            //_layoutElement.flexibleWidth = 0;
-
-            //placeholder.transform.SetSiblingIndex(transform.GetSiblingIndex());
-
-            //originParent = transform.parent;
-            //placeholderParent = originParent;
-            //transform.SetParent(transform.parent.parent);
         }
     }
 
@@ -177,6 +148,7 @@ public class Card : MonoBehaviour, IDragHandler, IBeginDragHandler, IEndDragHand
             if (player != null)
             {
                 onTweeningBack = true;
+                draggable = false;
                 Sequence sequence = DOTween.Sequence();
                 sequence.AppendInterval(0.1f);
                 sequence.Join(transform.DOMove(player.transform.position, 0.4f));
@@ -185,10 +157,10 @@ public class Card : MonoBehaviour, IDragHandler, IBeginDragHandler, IEndDragHand
                     pointerEventData = null;
                     onHand = true;
                     collider2D.enabled = false;
-                    transform.SetParent(player.transform);
+                    transform.SetParent(GameplayManager.Instance.player.handCardGroup.transform);
                     transform.SetSiblingIndex(cardId);
                     player.handCardFitter.enabled = true;
-                    player.handGroup.enabled = true;
+                    player.handCardGroup.enabled = true;
                     action?.Invoke(cardId, this);
                 });
             }
