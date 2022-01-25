@@ -54,7 +54,7 @@ public class Ai : ActorBase
                 HandleGetTurn();
                 break;
             case States.END_TURN:
-                HandleEndTurn();
+                StartCoroutine(HandleEndTurn());
                 break;
             case States.SKIP_TURN:
                 HandleSkipTurn();
@@ -96,7 +96,7 @@ public class Ai : ActorBase
         {
             if (handCards.Count > 0)
             {
-                GameplayManager.Instance.StateController(GameplayManager.GameState.SHIFT_TURN);
+                StateController(States.END_TURN);
             }
 
             else
@@ -107,13 +107,15 @@ public class Ai : ActorBase
 
         else
         {
-            GameplayManager.Instance.StateController(GameplayManager.GameState.SHIFT_TURN);
+            StateController(States.END_TURN);
         }
     }
 
     #region GETTING_TURN
     private void HandleGetTurn()
     {
+        SetUIOnGettingTurn();
+
         Debug.Log($"ai number {GameplayManager.Instance.allActors.IndexOf(GetComponent<ActorBase>())}");
         GameplayManager.Instance.actorGettingTurn = GetComponent<ActorBase>();
         float randomChance = Random.Range(0f, 100f);
@@ -153,9 +155,7 @@ public class Ai : ActorBase
                 {
                     case Card.MatchedSide.Left:
                         pickedToken = cardTokens[1];
-                        //randomConnectorPick = Random.Range(0, parentCardConnector.GetBottomActiveConnectors().Count - 1);
                         cardConnector = parentCardConnector.GetRandomFromActiveBotConnectors();
-                        //cardConnector = pickedCardSide.bottomCardConnector.GetChild(randomConnectorPick).GetComponent<CardConnector>();
                         Debug.Log($"get card connector type {cardConnector.cardConnectorType}");
 
                         if (cardConnector.cardConnectorType == CardConnector.CardConnectorType.BottomLeft)
@@ -300,73 +300,6 @@ public class Ai : ActorBase
         }
     }
 
-    public List<Card> GetFilteredHandCard(string token, int tokenIndex)
-    {
-        int randomConnectorPick;
-        IEnumerable<Card> filteredCards;
-        List<Card> filteredCardList = new List<Card>();
-
-        filteredCards = handCards.OrderBy(_card => _card._cardPairType.Split('|').ElementAt(tokenIndex) == token).Where(_card => _card._cardPairType.Split('|').ElementAt(tokenIndex) == token);
-        filteredCardList = filteredCards.ToList();
-        Debug.Log($"filtered card count {filteredCardList.Count}");
-
-        for (int i = 0; i < filteredCardList.Count; i++)
-        {
-            Debug.Log($"filtered card id {filteredCardList[i]._cardId}");
-            Debug.Log($"filtered card token {filteredCardList[i]._cardPairType}");
-            Debug.Log("===========================================================");
-        }
-
-        return filteredCardList;
-    }
-
-    private void CheckMatchingCard(string[] cardTokens, Card card, CardConnector cardConnector)
-    {
-        if (transform.childCount > 0)
-        {
-            string matchedToken;
-
-            switch (card.matchedSide)
-            {
-                case Card.MatchedSide.Right:
-                    if (cardConnector.cardConnectorType == CardConnector.CardConnectorType.TopLeft)
-                    {
-                        matchedToken = cardTokens[0];
-                        Debug.Log($"match token {matchedToken}");
-                        StartCoroutine(FindMatchTokenInCards(matchedToken, card, cardConnector));
-                    }
-
-                    else if (cardConnector.cardConnectorType == CardConnector.CardConnectorType.TopRight)
-                    {
-                        matchedToken = cardTokens[0];
-                        Debug.Log($"match token {matchedToken}");
-                        StartCoroutine(FindMatchTokenInCards(matchedToken, card, cardConnector));
-                    }
-                    
-                    break;
-
-                case Card.MatchedSide.Left:
-                    if (cardConnector.cardConnectorType == CardConnector.CardConnectorType.BottomLeft)
-                    {
-                        matchedToken = cardTokens[1];
-                        Debug.Log($"match token {matchedToken}");
-                        StartCoroutine(FindMatchTokenInCards(matchedToken, card, cardConnector));
-                    }
-                    else
-                    {
-                        matchedToken = cardTokens[0];
-                        Debug.Log($"match token {matchedToken}");
-                        StartCoroutine(FindMatchTokenInCards(matchedToken, card, cardConnector));
-                    }
-                    
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(card.matchedSide), card.matchedSide, null);
-            }
-
-        }
-    }
-
     private IEnumerator FindMatchTokenInCards(string token, Card pairingCard, CardConnector cardConnector)
     {
         bool cardMatchFound = false;
@@ -483,16 +416,34 @@ public class Ai : ActorBase
     #endregion
 
 #region END_TURN
-    private void HandleEndTurn()
+    private IEnumerator HandleEndTurn()
     {
+        yield return new WaitForSeconds(1.5f);
 
+        SetUIOnEndingTurn();
+        GameplayManager.Instance.StateController(GameplayManager.GameState.SHIFT_TURN);
     }
-#endregion
 
+    #endregion
+
+    #region UI_Handler
+    public void SetUIOnGettingTurn()
+    {
+        //animator.ResetTrigger(States.END_TURN.ToString());
+        animator.SetTrigger(States.GET_TURN.ToString());
+    }
+
+    public void SetUIOnEndingTurn()
+    {
+        //animator.ResetTrigger(States.GET_TURN.ToString());
+        animator.SetTrigger(States.END_TURN.ToString());
+    }
+
+    #endregion
 
     private void HandleSkipTurn()
     {
-        StartCoroutine(GameplayManager.Instance.HandleShiftTurn());
+        StateController(States.END_TURN);
     }
 
 

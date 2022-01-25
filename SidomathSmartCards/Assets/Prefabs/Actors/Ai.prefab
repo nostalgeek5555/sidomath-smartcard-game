@@ -180,7 +180,7 @@ MonoBehaviour:
   state: 0
   getTurnChance: {x: 0, y: 100}
   skipTurnChance: {x: 0, y: 0}
-  animator: {fileID: 0}
+  animator: {fileID: 6434452784500498198}
 --- !u!95 &6434452784500498198
 Animator:
   serializedVersion: 3
@@ -218,7 +218,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &2591124939919380300
 RectTransform:
   m_ObjectHideFlags: 0

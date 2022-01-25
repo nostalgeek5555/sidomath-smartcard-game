@@ -87,6 +87,8 @@ public class GameplayManager : MonoBehaviour
         {
             case GameState.INIT:
                 break;
+            case GameState.START_GAME:
+                break;
             case GameState.SHIFT_TURN:
                 //HandleShiftTurn();
                 break;
@@ -107,13 +109,16 @@ public class GameplayManager : MonoBehaviour
     public void StateController(GameState _gameState)
     {
         OnBeforeStateChange?.Invoke(_gameState);
-
+        
         gameState = _gameState;
 
         switch (gameState)
         {
             case GameState.INIT:
                 HandleInitiation();
+                break;
+            case GameState.START_GAME:
+                player.StateController(Player.PlayerState.GET_TURN);
                 break;
             case GameState.SHIFT_TURN:
                 StartCoroutine(HandleShiftTurn());
@@ -127,6 +132,7 @@ public class GameplayManager : MonoBehaviour
                 throw new ArgumentOutOfRangeException(nameof(_gameState), _gameState, null);
         }
 
+        UIManager.Instance.OnAfterGameplayStateChangeUI(gameState);
         OnAfterStateChange?.Invoke(_gameState);
     }
 
@@ -419,6 +425,8 @@ public class GameplayManager : MonoBehaviour
  #region HANDLE_SHIFT TURN
     public void HandleOnActorGettingTurn(ActorBase.Role role)
     {
+        UIManager.Instance.ChangeTurnUI();
+
         switch (role)
         {
             case ActorBase.Role.Player:
@@ -542,7 +550,7 @@ public class GameplayManager : MonoBehaviour
         LeanPool.Despawn(card);
         mainDecks.Remove(card);
     }
-#endregion
+    #endregion
 
     public IEnumerator SetupAllActors()
     {
@@ -566,10 +574,7 @@ public class GameplayManager : MonoBehaviour
 
         yield return new WaitUntil(() => gamestart == true);
 
-        //player.PickCard(player.handCards[player.handCards.Count - 1]);
-
-        //after all players (player and enemy ai) register their hand card, init player turn
-        player.StateController(Player.PlayerState.GET_TURN);
+        StateController(GameState.START_GAME);
     }
 
     public enum TurnCycle
@@ -581,7 +586,7 @@ public class GameplayManager : MonoBehaviour
     public enum GameState
     {
         INIT = 0,
-        CHECKING_PLAYERSTATE = 1,
+        START_GAME = 1,
         SHIFT_TURN = 2,
         SKIP_TURN = 3,
         WIN = 4,
