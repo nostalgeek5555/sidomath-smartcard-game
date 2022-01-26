@@ -29,10 +29,18 @@ public class ParentCardConnector : MonoBehaviour
         IEnumerable<CardConnector> topConn = topCardConnectors.Where(connector => connector.gameObject.active == true);
         List<CardConnector> activeTopConn = new List<CardConnector>(topConn.ToList());
 
-        int randomPick = Random.RandomRange(0, activeTopConn.Count - 1);
-        CardConnector picked = activeTopConn[randomPick];
+        if (activeTopConn.Count > 0)
+        {
+            int randomPick = Random.RandomRange(0, activeTopConn.Count - 1);
+            CardConnector picked = activeTopConn[randomPick];
 
-        return picked;
+            return picked;
+        }
+
+        else
+        {
+            return null;
+        }
     }
 
     public CardConnector GetRandomFromActiveBotConnectors()
@@ -40,9 +48,18 @@ public class ParentCardConnector : MonoBehaviour
         IEnumerable<CardConnector> botConn = bottomCardConnectors.Where(connector => connector.gameObject.active == true);
         List<CardConnector> activeBotConn = new List<CardConnector>(botConn.ToList());
 
-        int randomPick = Random.RandomRange(0, activeBotConn.Count - 1);
-        CardConnector picked = activeBotConn[randomPick];
+        if (activeBotConn.Count > 0)
+        {
+            int randomPick = Random.RandomRange(0, activeBotConn.Count - 1);
+            CardConnector picked = activeBotConn[randomPick];
 
-        return picked;
+            return picked;
+        }
+
+        else
+        {
+            return null;
+        }
+        
     }
 }

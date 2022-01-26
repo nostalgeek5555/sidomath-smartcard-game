@@ -943,7 +943,7 @@ public class BoardManager : MonoBehaviour
                 GameplayManager.Instance.MoveCardToBoard(card, spawnedCard, spawnedCard.currentCardConnector.transform, 0.6f, ResetDroppableAreas, null, GameplayManager.Instance.RemoveCard);
 
                 Ai ai = GameplayManager.Instance.actorGettingTurn.GetComponent<Ai>();
-                ai.OnMatchingCardEnd(spawnedCard);
+                ai.OnMatchingCardEnd(spawnedCard, card);
                 break;
             default:
                 break;

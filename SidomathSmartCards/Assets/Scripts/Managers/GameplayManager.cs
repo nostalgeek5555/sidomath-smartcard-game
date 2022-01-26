@@ -530,6 +530,8 @@ public class GameplayManager : MonoBehaviour
         sequence.Append(card.gameObject.transform.DOMove(targetPos.position, moveDuration, false));
         sequence.Join(cardRect.DOSizeDelta(targetRect.sizeDelta, moveDuration, false));
         sequence.Join(card.gameObject.transform.DORotate(spawnedCard.gameObject.transform.eulerAngles, moveDuration));
+        sequence.AppendInterval(0.2f);
+
         sequence.AppendCallback(() =>
         {
             card.canvasGroup.alpha = 0;
@@ -539,6 +541,7 @@ public class GameplayManager : MonoBehaviour
             {
                 spawnedCard.transform.SetParent(targetPos.parent.parent);
             }
+
             _action?.Invoke(card);
             action?.Invoke();
             StartCoroutine(enumerator);
@@ -547,8 +550,16 @@ public class GameplayManager : MonoBehaviour
 
     public void RemoveCard(Card card)
     {
-        LeanPool.Despawn(card);
-        mainDecks.Remove(card);
+        if (card != null)
+        {
+            LeanPool.Despawn(card);
+            //mainDecks.Remove(card);
+        }
+        
+        else
+        {
+            Debug.Log("card already removed");
+        }
     }
     #endregion
 

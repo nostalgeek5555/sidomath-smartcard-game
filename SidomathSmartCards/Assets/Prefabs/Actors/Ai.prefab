@@ -178,8 +178,8 @@ MonoBehaviour:
   handCardGroup: {fileID: 2634905699803820038}
   handCardFitter: {fileID: 0}
   state: 0
-  getTurnChance: {x: 0, y: 100}
-  skipTurnChance: {x: 0, y: 0}
+  getTurnChance: {x: 41, y: 100}
+  skipTurnChance: {x: 0, y: 40}
   animator: {fileID: 6434452784500498198}
 --- !u!95 &6434452784500498198
 Animator:

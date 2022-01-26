@@ -97,11 +97,13 @@ public class Card : MonoBehaviour, IDragHandler, IBeginDragHandler, IEndDragHand
 
     public void Picked()
     {
-        if (player.playerType == Player.PlayerType.Player)
+        if (cardType == CardType.OnHand)
         {
-            player.PickCard(this);
+            if (player != null && player.playerType == Player.PlayerType.Player)
+            {
+                player.PickCard(this);
+            }
         }
-        
     }
 
     public void OnBeginDrag(PointerEventData eventData)
