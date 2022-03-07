@@ -13,17 +13,117 @@ MonoBehaviour:
   m_Name: Level1
   m_EditorClassIdentifier: 
   levelId: 0
-  levelName: kakatua
+  levelName: tupai
   cardDatas:
   - cardId: 0
-    cardPairType: 1|1
-    cardCount: 12
-    cardSprite: {fileID: 6064845862917107451, guid: 82b261c56e527c64babd1985371a58b1, type: 3}
+    cardPairType: 5|10
+    cardCount: 1
+    cardSprite: {fileID: -2384419524739958719, guid: 25a3492a1ef05bd488a3a3b1661169e9, type: 3}
   - cardId: 1
-    cardPairType: 1|2
-    cardCount: 15
-    cardSprite: {fileID: -6690937496345645500, guid: 82b261c56e527c64babd1985371a58b1, type: 3}
+    cardPairType: 6|6
+    cardCount: 1
+    cardSprite: {fileID: -1308633862561664584, guid: 25a3492a1ef05bd488a3a3b1661169e9, type: 3}
   - cardId: 2
-    cardPairType: 2|1
-    cardCount: 12
-    cardSprite: {fileID: 1222811892024463407, guid: 82b261c56e527c64babd1985371a58b1, type: 3}
+    cardPairType: 7|10
+    cardCount: 1
+    cardSprite: {fileID: 701242604948342435, guid: 25a3492a1ef05bd488a3a3b1661169e9, type: 3}
+  - cardId: 3
+    cardPairType: 9|10
+    cardCount: 1
+    cardSprite: {fileID: 9131075054643957251, guid: 25a3492a1ef05bd488a3a3b1661169e9, type: 3}
+  - cardId: 4
+    cardPairType: 5|9
+    cardCount: 1
+    cardSprite: {fileID: -743578256750337327, guid: 25a3492a1ef05bd488a3a3b1661169e9, type: 3}
+  - cardId: 5
+    cardPairType: 7|9
+    cardCount: 1
+    cardSprite: {fileID: -8558588323757212008, guid: 25a3492a1ef05bd488a3a3b1661169e9, type: 3}
+  - cardId: 6
+    cardPairType: 9|4
+    cardCount: 1
+    cardSprite: {fileID: 7748554631179278409, guid: 25a3492a1ef05bd488a3a3b1661169e9, type: 3}
+  - cardId: 7
+    cardPairType: 5|8
+    cardCount: 1
+    cardSprite: {fileID: 2542599304191887801, guid: 25a3492a1ef05bd488a3a3b1661169e9, type: 3}
+  - cardId: 8
+    cardPairType: 7|8
+    cardCount: 1
+    cardSprite: {fileID: 654085349245652632, guid: 25a3492a1ef05bd488a3a3b1661169e9, type: 3}
+  - cardId: 9
+    cardPairType: 10|10
+    cardCount: 1
+    cardSprite: {fileID: 7904789756584687698, guid: 25a3492a1ef05bd488a3a3b1661169e9, type: 3}
+  - cardId: 10
+    cardPairType: 4|4
+    cardCount: 1
+    cardSprite: {fileID: -1299166560685136722, guid: 25a3492a1ef05bd488a3a3b1661169e9, type: 3}
+  - cardId: 11
+    cardPairType: 5|7
+    cardCount: 1
+    cardSprite: {fileID: -3150511250590911322, guid: 25a3492a1ef05bd488a3a3b1661169e9, type: 3}
+  - cardId: 12
+    cardPairType: 6|7
+    cardCount: 1
+    cardSprite: {fileID: -7721998655195872964, guid: 25a3492a1ef05bd488a3a3b1661169e9, type: 3}
+  - cardId: 13
+    cardPairType: 7|7
+    cardCount: 1
+    cardSprite: {fileID: -7279320484501394472, guid: 25a3492a1ef05bd488a3a3b1661169e9, type: 3}
+  - cardId: 14
+    cardPairType: 8|8
+    cardCount: 1
+    cardSprite: {fileID: -5177637769786691449, guid: 25a3492a1ef05bd488a3a3b1661169e9, type: 3}
+  - cardId: 15
+    cardPairType: 5|4
+    cardCount: 1
+    cardSprite: {fileID: -1223798626337180741, guid: 25a3492a1ef05bd488a3a3b1661169e9, type: 3}
+  - cardId: 16
+    cardPairType: 6|8
+    cardCount: 1
+    cardSprite: {fileID: 8752827471500682569, guid: 25a3492a1ef05bd488a3a3b1661169e9, type: 3}
+  - cardId: 17
+    cardPairType: 8|9
+    cardCount: 1
+    cardSprite: {fileID: -2567485814757208659, guid: 25a3492a1ef05bd488a3a3b1661169e9, type: 3}
+  - cardId: 18
+    cardPairType: 5|6
+    cardCount: 1
+    cardSprite: {fileID: -8465675598531249635, guid: 25a3492a1ef05bd488a3a3b1661169e9, type: 3}
+  - cardId: 19
+    cardPairType: 7|4
+    cardCount: 1
+    cardSprite: {fileID: 3567833451780912828, guid: 25a3492a1ef05bd488a3a3b1661169e9, type: 3}
+  - cardId: 20
+    cardPairType: 10|4
+    cardCount: 1
+    cardSprite: {fileID: 4327004753501063466, guid: 25a3492a1ef05bd488a3a3b1661169e9, type: 3}
+  - cardId: 21
+    cardPairType: 8|10
+    cardCount: 1
+    cardSprite: {fileID: 5271157268025952276, guid: 25a3492a1ef05bd488a3a3b1661169e9, type: 3}
+  - cardId: 22
+    cardPairType: 9|9
+    cardCount: 1
+    cardSprite: {fileID: 3535247884598685739, guid: 25a3492a1ef05bd488a3a3b1661169e9, type: 3}
+  - cardId: 23
+    cardPairType: 6|9
+    cardCount: 1
+    cardSprite: {fileID: -5388039784453226771, guid: 25a3492a1ef05bd488a3a3b1661169e9, type: 3}
+  - cardId: 24
+    cardPairType: 8|4
+    cardCount: 1
+    cardSprite: {fileID: -733535634678835005, guid: 25a3492a1ef05bd488a3a3b1661169e9, type: 3}
+  - cardId: 25
+    cardPairType: 6|10
+    cardCount: 1
+    cardSprite: {fileID: 1400453934605767477, guid: 25a3492a1ef05bd488a3a3b1661169e9, type: 3}
+  - cardId: 26
+    cardPairType: 5|5
+    cardCount: 1
+    cardSprite: {fileID: 8581400141402152881, guid: 25a3492a1ef05bd488a3a3b1661169e9, type: 3}
+  - cardId: 27
+    cardPairType: 6|4
+    cardCount: 1
+    cardSprite: {fileID: 5092675152479777378, guid: 25a3492a1ef05bd488a3a3b1661169e9, type: 3}

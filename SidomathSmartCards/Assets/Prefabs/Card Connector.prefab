@@ -425,6 +425,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: af5542b8b60702c4a8f0009fe0b67bc6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  allCardConnector:
+  - {fileID: 3264832651311479208}
+  - {fileID: 3497983775873326536}
+  - {fileID: 8777153908868205796}
+  - {fileID: 4303098672853338601}
+  - {fileID: 8419465210932841038}
+  - {fileID: 5272033275292464322}
   topCardConnectors:
   - {fileID: 3264832651311479208}
   - {fileID: 3497983775873326536}

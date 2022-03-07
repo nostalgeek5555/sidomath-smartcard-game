@@ -22,9 +22,16 @@ public class Player : ActorBase
     public int prevCardIndex;
     public Card pickedCard;
 
+    public Button skipButton;
+
     private void Start()
     {
         InitPlayer();
+    }
+
+    private void OnDisable()
+    {
+        skipButton.onClick.RemoveAllListeners();
     }
 
     public void InitPlayer()
@@ -33,6 +40,12 @@ public class Player : ActorBase
         health = 3;
         turn = false;
         gameover = false;
+
+        skipButton.onClick.RemoveAllListeners();
+        skipButton.onClick.AddListener(() =>
+        {
+            HandleSkipTurn();
+        });
     }
 
     public override void RegisterHandCards()
@@ -188,6 +201,15 @@ public class Player : ActorBase
         
     }
 
+    private void HandleSkipTurn()
+    {
+        Debug.Log("skip turn");
+        if (playerState == PlayerState.GET_TURN)
+        {
+            playerState = PlayerState.SKIP_TURN;
+            StateController(PlayerState.END_TURN);
+        }
+    }
     private void HandleEndingTurn()
     {
         Debug.Log("player ending turn");

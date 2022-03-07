@@ -4,9 +4,17 @@ using UnityEngine;
 
 public class ParentCardConnector : MonoBehaviour
 {
+    public List<CardConnector> allCardConnector = new List<CardConnector>();
     public List<CardConnector> topCardConnectors = new List<CardConnector>();
     public List<CardConnector> bottomCardConnectors = new List<CardConnector>();
 
+    public List<CardConnector> GetActiveConnectors()
+    {
+        IEnumerable<CardConnector> connectors = allCardConnector.Where(connector => connector.gameObject.active == true);
+        List<CardConnector> activeConnectors = new List<CardConnector>(connectors.ToList());
+
+        return activeConnectors;
+    }
 
     public List<CardConnector> GetTopActiveConnectors()
     {

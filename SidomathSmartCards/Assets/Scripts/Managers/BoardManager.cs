@@ -734,27 +734,42 @@ public class BoardManager : MonoBehaviour
         }
     }
 
-    public void AddCardToDroppableList(Card card, Card parentCard)
+    public void AddCardToDroppableList(Card parentCard, Card card = null)
     {
+        Debug.Log("add card to droppable list");
         switch (parentCard.matchedSide)
         {
             case Card.MatchedSide.None:
-                droppableCardList.Add(card);
-                droppableCardList.Add(parentCard);
+                if (card != null)
+                {
+                    droppableCardList.Add(card);
+                    droppableCardList.Add(parentCard);
+                }
+
+                else
+                {
+                    droppableCardList.Add(parentCard);
+                }
+                
                 break;
             case Card.MatchedSide.Left:
                 droppableCardList.Add(card);
                 droppableCardList.Add(parentCard);
+
+                droppableCardList = droppableCardList.Distinct().ToList();
                 break;
             case Card.MatchedSide.Right:
                 droppableCardList.Add(card);
                 droppableCardList.Add(parentCard);
+
+                droppableCardList = droppableCardList.Distinct().ToList();
                 break;
             case Card.MatchedSide.Both:
                 droppableCardList.Remove(parentCard);
                 droppableCardList.Add(card);
                 break;
             default:
+                Debug.Log("card not added");
                 break;
         }
     }
@@ -899,7 +914,7 @@ public class BoardManager : MonoBehaviour
         GameplayManager.Instance.player.handCardGroup.enabled = true;
         GameplayManager.Instance.player.handCardFitter.enabled = true;
 
-        AddCardToDroppableList(spawnedCard, pairingCard);
+        AddCardToDroppableList(pairingCard, spawnedCard);
 
         switch (pairingCard.facing)
         {

@@ -141,7 +141,7 @@ public class GameplayManager : MonoBehaviour
     {
         currentGameMode = DataManager.Instance.gameModeTable["Offline|SinglePlayer"];
         InitGameMode(currentGameMode);
-        StartCoroutine(InitLevel(DataManager.Instance.levelTable["0|kakatua"]));
+        StartCoroutine(InitLevel(DataManager.Instance.levelTable["0|tupai"]));
     }
 
     public IEnumerator HandleShiftTurn()
@@ -540,6 +540,11 @@ public class GameplayManager : MonoBehaviour
             if (BoardManager.Instance.allDroppedCards.Count <= 1)
             {
                 spawnedCard.transform.SetParent(targetPos.parent.parent);
+            }
+
+            if (gameState == GameState.INIT)
+            {
+                BoardManager.Instance.AddCardToDroppableList(spawnedCard);
             }
 
             _action?.Invoke(card);

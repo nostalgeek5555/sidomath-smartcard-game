@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 using TMPro;
 
 public class UIManager : MonoBehaviour
@@ -11,6 +12,8 @@ public class UIManager : MonoBehaviour
     [Header("Gameplay UI Elements")]
     public TextMeshProUGUI actorTurnTMP;
 
+    [Header("Player Gameplay UI")]
+    public Button playerSkipButton;
 
     void Start()
     {
