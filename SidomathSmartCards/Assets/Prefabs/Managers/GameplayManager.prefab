@@ -53,14 +53,17 @@ MonoBehaviour:
   cardSpawnedPrefab: {fileID: 8588623442856330343, guid: 3472b77e37c256946a1f1983c8760c62, type: 3}
   cardConnectorPrefab: {fileID: 989418294888819139, guid: c44dc475130933948819c73f67f26402, type: 3}
   dealerDeckHolder: {fileID: 0}
+  gameState: 0
+  actorTurnID: 0
+  actorGettingTurn: {fileID: 0}
   currentGameMode: {fileID: 0}
   turnCycle: 0
-  currentPlayerTurnID: 0
-  distributeCardTime: 0.2
+  distributeCardTime: 0.12
   levelID: 0
   levelName: 
   mainDecks: []
-  allPlayers: []
+  allActors: []
   deckHolders: []
   gamestart: 0
   gameover: 0
+  pause: 0

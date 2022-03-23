@@ -70,4 +70,42 @@ public class ParentCardConnector : MonoBehaviour
         }
         
     }
+
+    public CardConnector GetRandomBotConnectorWithoutType(CardConnector.CardConnectorType connectorType)
+    {
+        IEnumerable<CardConnector> botConn = bottomCardConnectors.Where(connector => connector.gameObject.active == true).Where(connector => connector.cardConnectorType != connectorType);
+        List<CardConnector> activeBotConn = new List<CardConnector>(botConn.ToList());
+
+        if (activeBotConn.Count > 0)
+        {
+            int randomPick = Random.RandomRange(0, activeBotConn.Count - 1);
+            CardConnector picked = activeBotConn[randomPick];
+
+            return picked;
+        }
+
+        else
+        {
+            return null;
+        }
+    }
+
+    public CardConnector GetRandomTopConnectorWithoutType(CardConnector.CardConnectorType connectorType)
+    {
+        IEnumerable<CardConnector> topConn = topCardConnectors.Where(connector => connector.gameObject.active == true).Where(connector => connector.cardConnectorType != connectorType);
+        List<CardConnector> activeTopConn = new List<CardConnector>(topConn.ToList());
+
+        if (activeTopConn.Count > 0)
+        {
+            int randomPick = Random.RandomRange(0, activeTopConn.Count - 1);
+            CardConnector picked = activeTopConn[randomPick];
+
+            return picked;
+        }
+
+        else
+        {
+            return null;
+        }
+    }
 }

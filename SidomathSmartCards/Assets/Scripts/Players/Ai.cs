@@ -101,16 +101,16 @@ public class Ai : ActorBase
         GameplayManager.Instance.actorGettingTurn = GetComponent<ActorBase>();
         float randomChance = Random.Range(0, 100);
         Debug.Log($"ai number {GameplayManager.Instance.allActors.IndexOf(GetComponent<ActorBase>())} {randomChance}");
-        if (randomChance <= skipTurnChance.y)
-        {
-            Debug.Log($"ai number {GameplayManager.Instance.allActors.IndexOf(GetComponent<ActorBase>())} skip turn");
-            StateController(States.SKIP_TURN);
-        }
-
-        else
+        if (randomChance >= getTurnChance.x && randomChance <= getTurnChance.y)
         {
             Debug.Log("processing turn");
             StateController(States.PROCESSING_TURN);
+        }
+
+        else if (randomChance <= skipTurnChance.y)
+        {
+            Debug.Log($"ai number {GameplayManager.Instance.allActors.IndexOf(GetComponent<ActorBase>())} skip turn, chance == {randomChance}");
+            StateController(States.SKIP_TURN);
         }
     }
 
@@ -162,6 +162,7 @@ public class Ai : ActorBase
 
                                     else
                                     {
+                                        Debug.Log($"skip turn because of none matched card found == {filteredCardList.Count}");
                                         StateController(States.SKIP_TURN);
                                     }
                                 }
@@ -184,6 +185,7 @@ public class Ai : ActorBase
 
                                     else
                                     {
+                                        Debug.Log($"skip turn because of none matched card found == {filteredCardList.Count}");
                                         StateController(States.SKIP_TURN);
                                     }
                                 }
@@ -191,6 +193,7 @@ public class Ai : ActorBase
 
                             else
                             {
+                                Debug.Log($"skip turn because of no card connector found");
                                 StateController(States.SKIP_TURN);
                             }
                         }
@@ -220,6 +223,7 @@ public class Ai : ActorBase
 
                                     else
                                     {
+                                        Debug.Log($"skip turn because of none matched card found == {filteredCardList.Count}");
                                         StateController(States.SKIP_TURN);
                                     }
 
@@ -243,6 +247,7 @@ public class Ai : ActorBase
 
                                     else
                                     {
+                                        Debug.Log($"skip turn because of none matched card found == {filteredCardList.Count}");
                                         StateController(States.SKIP_TURN);
                                     }
                                 }
@@ -250,6 +255,7 @@ public class Ai : ActorBase
 
                             else
                             {
+                                Debug.Log($"skip turn because of no card connector found");
                                 StateController(States.SKIP_TURN);
                             }
                         }
@@ -278,6 +284,7 @@ public class Ai : ActorBase
 
                                 else
                                 {
+                                    Debug.Log($"skip turn because of none matched card found == {filteredCardList.Count}");
                                     StateController(States.SKIP_TURN);
                                 }
 
@@ -300,6 +307,7 @@ public class Ai : ActorBase
 
                                 else
                                 {
+                                    Debug.Log($"skip turn because of none matched card found == {filteredCardList.Count}");
                                     StateController(States.SKIP_TURN);
                                 }
                             }
@@ -307,6 +315,7 @@ public class Ai : ActorBase
 
                         else
                         {
+                            Debug.Log($"skip turn because of no card connector found");
                             StateController(States.SKIP_TURN);
                         }
 
@@ -335,6 +344,7 @@ public class Ai : ActorBase
 
                                 else
                                 {
+                                    Debug.Log($"skip turn because of none matched card found == {filteredCardList.Count}");
                                     StateController(States.SKIP_TURN);
                                 }
                             }
@@ -356,6 +366,7 @@ public class Ai : ActorBase
 
                                 else
                                 {
+                                    Debug.Log($"skip turn because of none matched card found == {filteredCardList.Count}");
                                     StateController(States.SKIP_TURN);
                                 }
                             }
@@ -363,6 +374,7 @@ public class Ai : ActorBase
 
                         else
                         {
+                            Debug.Log($"skip turn because of no card connector found");
                             StateController(States.SKIP_TURN);
                         }
                         break;
@@ -517,6 +529,7 @@ public class Ai : ActorBase
 
                                 else
                                 {
+                                    Debug.Log($"skip turn because of none matched card found == {filteredCardList.Count}");
                                     StateController(States.SKIP_TURN);
                                 }
 
@@ -539,6 +552,7 @@ public class Ai : ActorBase
 
                                 else
                                 {
+                                    Debug.Log($"skip turn because of none matched card found == {filteredCardList.Count}");
                                     StateController(States.SKIP_TURN);
                                 }
                             }
@@ -546,6 +560,7 @@ public class Ai : ActorBase
 
                         else
                         {
+                            Debug.Log($"skip turn because of no card connector found");
                             StateController(States.SKIP_TURN);
                         }
                         break;
@@ -573,6 +588,7 @@ public class Ai : ActorBase
 
                                 else
                                 {
+                                    Debug.Log($"skip turn because of none matched card found == {filteredCardList.Count}");
                                     StateController(States.SKIP_TURN);
                                 }
                             }
@@ -594,6 +610,7 @@ public class Ai : ActorBase
 
                                 else
                                 {
+                                    Debug.Log($"skip turn because of none matched card found == {filteredCardList.Count}");
                                     StateController(States.SKIP_TURN);
                                 }
                             }
@@ -601,6 +618,7 @@ public class Ai : ActorBase
 
                         else
                         {
+                            Debug.Log($"skip turn because of no card connector found");
                             StateController(States.SKIP_TURN);
                         }
                         break;

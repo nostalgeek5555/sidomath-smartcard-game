@@ -79,7 +79,12 @@ public class Player : ActorBase
             case PlayerState.GAME_OVER:
                 HandleGameOver();
                 break;
-
+            case PlayerState.PAUSE:
+                HandlePause();
+                break;
+            case PlayerState.RESUME:
+                HandleResume();
+                break;
             default:
                 break;
         }
@@ -230,6 +235,34 @@ public class Player : ActorBase
         GameplayManager.Instance.StateController(GameplayManager.GameState.GAME_OVER);
     }
 
+    private void HandlePause()
+    {
+        pickedCard.overrideCanvas.enabled = false;
+        pickedCard.overrideCanvas.sortingOrder = 0;
+        skipButton.enabled = false;
+        foreach (Card card in handCards)
+        {
+            card.canBePick = false;
+            card.draggable = false;
+            card.cardHighlight.SetActive(false);
+        }
+    }
+
+    private void HandleResume()
+    {
+        pickedCard.overrideCanvas.enabled = true;
+        pickedCard.overrideCanvas.sortingOrder = 1;
+        skipButton.enabled = true;
+        foreach (Card card in handCards)
+        {
+            card.canBePick = true;
+            card.draggable = true;
+        }
+
+        pickedCard.cardHighlight.SetActive(true);
+    }
+
+
 
     public enum PlayerType
     {
@@ -244,6 +277,8 @@ public class Player : ActorBase
         END_TURN = 2,
         SKIP_TURN = 3,
         WIN = 4,
-        GAME_OVER = 5
+        GAME_OVER = 5,
+        PAUSE = 6,
+        RESUME = 7
     }
 }

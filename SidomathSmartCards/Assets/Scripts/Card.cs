@@ -153,7 +153,7 @@ public class Card : MonoBehaviour, IDragHandler, IBeginDragHandler, IEndDragHand
                 draggable = false;
                 Sequence sequence = DOTween.Sequence();
                 sequence.AppendInterval(0.1f);
-                sequence.Join(transform.DOMove(player.transform.position, 0.4f));
+                sequence.Join(transform.DOMove(player.handCardParent.position, 0.4f));
                 sequence.AppendCallback(() =>
                 {
                     pointerEventData = null;

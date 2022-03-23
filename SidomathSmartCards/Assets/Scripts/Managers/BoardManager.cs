@@ -1053,7 +1053,6 @@ public class BoardManager : MonoBehaviour
                                     cardConnector.animator.SetTrigger(CardConnector.HighlightType.Droppable.ToString());
                                     cardConnector.droppable = true;
                                     cardConnector.dropped = false;
-                                    Debug.Log($"Card connector highlighted {cardConnector.animator.GetCurrentAnimatorStateInfo(0).shortNameHash}");
                                 }
                             }
                         }

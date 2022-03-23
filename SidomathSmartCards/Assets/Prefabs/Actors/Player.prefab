@@ -60,7 +60,7 @@ MonoBehaviour:
   handCardFitter: {fileID: 4549081233280566473}
   playerType: 0
   playerState: 0
-  handCardParent: {fileID: 0}
+  handCardParent: {fileID: 8919138237001531763}
   cardHighlightPicker: {fileID: 0}
   pickedCardId: 0
   pickedCardSiblingIndex: 0
@@ -118,7 +118,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: -100}
+  m_AnchoredPosition: {x: 23.07, y: -100}
   m_SizeDelta: {x: 168, y: 168}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &5530052140936084036

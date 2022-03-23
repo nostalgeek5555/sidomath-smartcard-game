@@ -5,6 +5,7 @@ using UnityEngine;
 using Lean.Pool;
 using DG.Tweening;
 using System.Linq;
+using UnityEngine.SceneManagement;
 using Random = UnityEngine.Random;
 
 public class GameplayManager : MonoBehaviour
@@ -45,6 +46,7 @@ public class GameplayManager : MonoBehaviour
     [Header("State Controller")]
     public bool gamestart = false;
     public bool gameover = false;
+    public bool pause = false;
 
     private void OnEnable()
     {
@@ -79,6 +81,11 @@ public class GameplayManager : MonoBehaviour
         {
             StateController(GameState.INIT);
         }
+
+        //DOTween.KillAll();
+        //DOTween.Clear();
+        //DOTween.ClearCachedTweens();
+        //DOTween.RestartAll();
     }
 
     public void HandleBeforeStateChange(GameState _gameState)
@@ -95,6 +102,10 @@ public class GameplayManager : MonoBehaviour
             case GameState.WIN:
                 break;
             case GameState.GAME_OVER:
+                break;
+            case GameState.PAUSE:
+                break;
+            case GameState.RESUME:
                 break;
             default:
                 throw new ArgumentOutOfRangeException(nameof(_gameState), _gameState, null);
@@ -128,6 +139,12 @@ public class GameplayManager : MonoBehaviour
             case GameState.GAME_OVER:
                 HandleGameOver();
                 break;
+            case GameState.PAUSE:
+                HandlePause();
+                break;
+            case GameState.RESUME:
+                HandleResume();
+                break;
             default:
                 throw new ArgumentOutOfRangeException(nameof(_gameState), _gameState, null);
         }
@@ -139,6 +156,7 @@ public class GameplayManager : MonoBehaviour
 
     public void HandleInitiation()
     {
+        UIManager.Instance.pauseButton.interactable = false;
         currentGameMode = DataManager.Instance.gameModeTable["Offline|SinglePlayer"];
         InitGameMode(currentGameMode);
         StartCoroutine(InitLevel(DataManager.Instance.levelTable["0|tupai"]));
@@ -187,6 +205,22 @@ public class GameplayManager : MonoBehaviour
 
         Debug.Log("shifting turn");
         OnActorGettingTurn?.Invoke(actorGettingTurn.actorRole);
+    }
+
+    public void HandlePause()
+    {
+        Debug.Log("handle pause");
+        pause = true;
+        Time.timeScale = 0;
+        player.StateController(Player.PlayerState.PAUSE);
+    }
+
+    public void HandleResume()
+    {
+        Debug.Log("handle resume");
+        pause = false;
+        Time.timeScale = 1;
+        player.StateController(Player.PlayerState.RESUME);
     }
 
     public void HandleGameOver()
@@ -342,11 +376,25 @@ public class GameplayManager : MonoBehaviour
 
         if (cardID < cards.Count - 1)
         {
+            Debug.Log($"total main card count {cards.Count}");
             //distribute to each deck holder start from player
             if (deckHolderID < deckHolders.Count)
             {
+                Debug.Log($"deck holder id == {deckHolderID}, deck holder count == {deckHolders.Count}");
+                Debug.Log($"card {card.gameObject.name}");
+                Debug.Log($"distribute card time {distributeCardTime}");
+
+                
+                //DOTween.ClearCachedTweens();
+                DOTween.To(setter: value =>
+                {
+                    Debug.Log(value);
+                    //seed.transform.position = Parabola(seed.transform.position, _target.transform.position, _height, value);
+                }, startValue: 0, endValue: 1, duration: distributeCardTime)
+                .SetEase(Ease.Linear);
+
                 Sequence sequence = DOTween.Sequence();
-                sequence.Append(card.gameObject.transform.DOMove(deckHolders[deckHolderID].position, distributeCardTime, false));
+                sequence.Append(card.gameObject.transform.DOMove(deckHolders[deckHolderID].position, distributeCardTime));
                 sequence.AppendCallback(() =>
                 {
                     card.gameObject.transform.SetParent(deckHolders[deckHolderID]);
@@ -354,7 +402,7 @@ public class GameplayManager : MonoBehaviour
                     cardID++;
                     deckHolderID++;
 
-                    //Debug.Log($"current card id :: {cardID}");
+                    Debug.Log($"current card id :: {cardID}");
                     DistributeCards(cards, cardID, deckHolderID);
                 });
             }
@@ -362,8 +410,11 @@ public class GameplayManager : MonoBehaviour
             else
             {
                 deckHolderID = 0;
+
+                
+                //DOTween.ClearCachedTweens();
                 Sequence sequence = DOTween.Sequence();
-                sequence.Append(card.gameObject.transform.DOMove(deckHolders[deckHolderID].position, distributeCardTime, false));
+                sequence.Append(card.gameObject.transform.DOMove(deckHolders[deckHolderID].position, distributeCardTime));
                 sequence.AppendCallback(() =>
                 {
                     card.gameObject.transform.SetParent(deckHolders[deckHolderID]);
@@ -371,7 +422,7 @@ public class GameplayManager : MonoBehaviour
                     cardID++;
                     deckHolderID++;
 
-                    //Debug.Log($"current card id :: {cardID}");
+                    Debug.Log($"current card id :: {cardID}");
                     DistributeCards(cards, cardID, deckHolderID);
                 });
             }
@@ -568,6 +619,7 @@ public class GameplayManager : MonoBehaviour
     }
     #endregion
 
+
     public IEnumerator SetupAllActors()
     {
         Debug.Log("setup all player");
@@ -606,6 +658,8 @@ public class GameplayManager : MonoBehaviour
         SHIFT_TURN = 2,
         SKIP_TURN = 3,
         WIN = 4,
-        GAME_OVER = 5
+        GAME_OVER = 5,
+        PAUSE = 6,
+        RESUME = 7
     }
 }
