@@ -37,7 +37,8 @@ public class Ai : ActorBase
                 break;
             case States.PROCESSING_TURN:
                 //HandleProcessingTurn(CheckMatchingCard);
-                HandleProcessingTurn(BoardManager.Instance.OnDroppedCardMatch);
+                //HandleProcessingTurn(BoardManager.Instance.OnDroppedCardMatch);
+                FindMatchingCard(BoardManager.Instance.OnDroppedCardMatch);
                 break;
             case States.GET_TURN:
                 HandleGetTurn();
@@ -114,528 +115,703 @@ public class Ai : ActorBase
         }
     }
 
-    private void HandleProcessingTurn(Action<Card, Card, CardConnector> action = null)
+    //private void HandleProcessingTurn(Action<Card, Card, CardConnector> action = null)
+    //{
+    //    Debug.Log("processing turn");
+    //    int randomPickCardSide = Random.Range(0, 1);
+    //    Card pickedCardSide = BoardManager.Instance.droppableCardList[randomPickCardSide];
+    //    ParentCardConnector parentCardConnector = pickedCardSide.mainConnector.GetComponent<ParentCardConnector>();
+    //    string[] cardTokens = pickedCardSide._cardPairType.Split('|');
+
+    //    //these parameters needed for filtering cards in ai hands which matched current picked token in pairing card
+    //    string pickedToken;
+    //    int randomConnectorPick;
+    //    CardConnector cardConnector;
+    //    IEnumerable<Card> filteredCards;
+    //    List<Card> filteredCardList = new List<Card>();
+
+    //    switch (pickedCardSide.facing)
+    //    {
+    //        case Card.Facing.Vertical:
+    //            switch (pickedCardSide.matchedSide)
+    //            {
+    //                case Card.MatchedSide.None:
+    //                    int randomSide = Random.Range(0, 1);
+
+    //                    //if randomSide == 0, then pick top side connectors
+    //                    if (randomSide == 0)
+    //                    {
+    //                        cardConnector = parentCardConnector.GetRandomFromActiveTopConnectors();
+
+    //                        if (cardConnector != null)
+    //                        {
+    //                            if (cardConnector.cardConnectorType == CardConnector.CardConnectorType.TopRight)
+    //                            {
+    //                                pickedToken = cardTokens[0];
+    //                                filteredCards = handCards.OrderBy(_card => _card._cardPairType.Split('|').ElementAt(0) == pickedToken).Where(_card => _card._cardPairType.Split('|').ElementAt(0) == pickedToken);
+    //                                filteredCardList = filteredCards.ToList();
+
+    //                                if (filteredCardList.Count > 0)
+    //                                {
+    //                                    Card randomPickHandCard = filteredCardList[Random.RandomRange(0, filteredCardList.Count - 1)];
+    //                                    randomPickHandCard.matched = true;
+    //                                    randomPickHandCard.matchedSide = Card.MatchedSide.Left;
+    //                                    pickedCardSide.matchedSide = Card.MatchedSide.Right;
+
+    //                                    action?.Invoke(randomPickHandCard, pickedCardSide, cardConnector);
+    //                                }
+
+    //                                else
+    //                                {
+    //                                    Debug.Log($"skip turn because of none matched card found == {filteredCardList.Count}");
+    //                                    StateController(States.SKIP_TURN);
+    //                                }
+    //                            }
+
+    //                            else
+    //                            {
+    //                                pickedToken = cardTokens[1];
+    //                                filteredCards = handCards.OrderBy(_card => _card._cardPairType.Split('|').ElementAt(1) == pickedToken).Where(_card => _card._cardPairType.Split('|').ElementAt(1) == pickedToken);
+    //                                filteredCardList = filteredCards.ToList();
+
+    //                                if (filteredCardList.Count > 0)
+    //                                {
+    //                                    Card randomPickHandCard = filteredCardList[Random.RandomRange(0, filteredCardList.Count - 1)];
+    //                                    randomPickHandCard.matched = true;
+    //                                    randomPickHandCard.matchedSide = Card.MatchedSide.Right;
+    //                                    pickedCardSide.matchedSide = Card.MatchedSide.Left;
+
+    //                                    action?.Invoke(randomPickHandCard, pickedCardSide, cardConnector);
+    //                                }
+
+    //                                else
+    //                                {
+    //                                    Debug.Log($"skip turn because of none matched card found == {filteredCardList.Count}");
+    //                                    StateController(States.SKIP_TURN);
+    //                                }
+    //                            }
+    //                        }
+
+    //                        else
+    //                        {
+    //                            Debug.Log($"skip turn because of no card connector found");
+    //                            StateController(States.SKIP_TURN);
+    //                        }
+    //                    }
+
+    //                    //else if randomSide == 1, then pick bottom side connectors
+    //                    else
+    //                    {
+    //                        cardConnector = parentCardConnector.GetRandomFromActiveBotConnectors();
+
+    //                        if (cardConnector != null)
+    //                        {
+    //                            if (cardConnector.cardConnectorType == CardConnector.CardConnectorType.BottomLeft)
+    //                            {
+    //                                pickedToken = cardTokens[1];
+    //                                filteredCards = handCards.OrderBy(_card => _card._cardPairType.Split('|').ElementAt(1) == pickedToken).Where(_card => _card._cardPairType.Split('|').ElementAt(1) == pickedToken);
+    //                                filteredCardList = filteredCards.ToList();
+
+    //                                if (filteredCardList.Count > 0)
+    //                                {
+    //                                    Card randomPickHandCard = filteredCardList[Random.RandomRange(0, filteredCardList.Count - 1)];
+    //                                    randomPickHandCard.matched = true;
+    //                                    randomPickHandCard.matchedSide = Card.MatchedSide.Right;
+    //                                    pickedCardSide.matchedSide = Card.MatchedSide.Left;
+
+    //                                    action?.Invoke(randomPickHandCard, pickedCardSide, cardConnector);
+    //                                }
+
+    //                                else
+    //                                {
+    //                                    Debug.Log($"skip turn because of none matched card found == {filteredCardList.Count}");
+    //                                    StateController(States.SKIP_TURN);
+    //                                }
+
+    //                            }
+
+    //                            else
+    //                            {
+    //                                pickedToken = cardTokens[0];
+    //                                filteredCards = handCards.OrderBy(_card => _card._cardPairType.Split('|').ElementAt(0) == pickedToken).Where(_card => _card._cardPairType.Split('|').ElementAt(0) == pickedToken);
+    //                                filteredCardList = filteredCards.ToList();
+
+    //                                if (filteredCardList.Count > 0)
+    //                                {
+    //                                    Card randomPickHandCard = filteredCardList[Random.RandomRange(0, filteredCardList.Count - 1)];
+    //                                    randomPickHandCard.matched = true;
+    //                                    randomPickHandCard.matchedSide = Card.MatchedSide.Left;
+    //                                    pickedCardSide.matchedSide = Card.MatchedSide.Right;
+
+    //                                    action?.Invoke(randomPickHandCard, pickedCardSide, cardConnector);
+    //                                }
+
+    //                                else
+    //                                {
+    //                                    Debug.Log($"skip turn because of none matched card found == {filteredCardList.Count}");
+    //                                    StateController(States.SKIP_TURN);
+    //                                }
+    //                            }
+    //                        }
+
+    //                        else
+    //                        {
+    //                            Debug.Log($"skip turn because of no card connector found");
+    //                            StateController(States.SKIP_TURN);
+    //                        }
+    //                    }
+    //                    break;
+
+    //                case Card.MatchedSide.Left:
+    //                    pickedToken = cardTokens[1];
+    //                    cardConnector = parentCardConnector.GetRandomFromActiveBotConnectors();
+
+    //                    if (cardConnector != null)
+    //                    {
+    //                        if (cardConnector.cardConnectorType == CardConnector.CardConnectorType.BottomLeft)
+    //                        {
+    //                            filteredCards = handCards.OrderBy(_card => _card._cardPairType.Split('|').ElementAt(1) == pickedToken).Where(_card => _card._cardPairType.Split('|').ElementAt(1) == pickedToken);
+    //                            filteredCardList = filteredCards.ToList();
+
+    //                            if (filteredCardList.Count > 0)
+    //                            {
+    //                                Card randomPickHandCard = filteredCardList[Random.RandomRange(0, filteredCardList.Count - 1)];
+    //                                randomPickHandCard.matched = true;
+    //                                randomPickHandCard.matchedSide = Card.MatchedSide.Right;
+    //                                pickedCardSide.matchedSide = Card.MatchedSide.Both;
+
+    //                                action?.Invoke(randomPickHandCard, pickedCardSide, cardConnector);
+    //                            }
+
+    //                            else
+    //                            {
+    //                                Debug.Log($"skip turn because of none matched card found == {filteredCardList.Count}");
+    //                                StateController(States.SKIP_TURN);
+    //                            }
+
+    //                        }
+
+    //                        else
+    //                        {
+    //                            filteredCards = handCards.OrderBy(_card => _card._cardPairType.Split('|').ElementAt(0) == pickedToken).Where(_card => _card._cardPairType.Split('|').ElementAt(0) == pickedToken);
+    //                            filteredCardList = filteredCards.ToList();
+
+    //                            if (filteredCardList.Count > 0)
+    //                            {
+    //                                Card randomPickHandCard = filteredCardList[Random.RandomRange(0, filteredCardList.Count - 1)];
+    //                                randomPickHandCard.matched = true;
+    //                                randomPickHandCard.matchedSide = Card.MatchedSide.Left;
+    //                                pickedCardSide.matchedSide = Card.MatchedSide.Both;
+
+    //                                action?.Invoke(randomPickHandCard, pickedCardSide, cardConnector);
+    //                            }
+
+    //                            else
+    //                            {
+    //                                Debug.Log($"skip turn because of none matched card found == {filteredCardList.Count}");
+    //                                StateController(States.SKIP_TURN);
+    //                            }
+    //                        }
+    //                    }
+
+    //                    else
+    //                    {
+    //                        Debug.Log($"skip turn because of no card connector found");
+    //                        StateController(States.SKIP_TURN);
+    //                    }
+
+    //                    break;
+
+    //                case Card.MatchedSide.Right:
+    //                    pickedToken = cardTokens[0];
+    //                    cardConnector = parentCardConnector.GetRandomFromActiveTopConnectors();
+                        
+    //                    if (cardConnector != null)
+    //                    {
+    //                        if (cardConnector.cardConnectorType == CardConnector.CardConnectorType.TopRight)
+    //                        {
+    //                            filteredCards = handCards.OrderBy(_card => _card._cardPairType.Split('|').ElementAt(0) == pickedToken).Where(_card => _card._cardPairType.Split('|').ElementAt(0) == pickedToken);
+    //                            filteredCardList = filteredCards.ToList();
+
+    //                            if (filteredCardList.Count > 0)
+    //                            {
+    //                                Card randomPickHandCard = filteredCardList[Random.RandomRange(0, filteredCardList.Count - 1)];
+    //                                randomPickHandCard.matched = true;
+    //                                randomPickHandCard.matchedSide = Card.MatchedSide.Left;
+    //                                pickedCardSide.matchedSide = Card.MatchedSide.Both;
+
+    //                                action?.Invoke(randomPickHandCard, pickedCardSide, cardConnector);
+    //                            }
+
+    //                            else
+    //                            {
+    //                                Debug.Log($"skip turn because of none matched card found == {filteredCardList.Count}");
+    //                                StateController(States.SKIP_TURN);
+    //                            }
+    //                        }
+
+    //                        else
+    //                        {
+    //                            filteredCards = handCards.OrderBy(_card => _card._cardPairType.Split('|').ElementAt(1) == pickedToken).Where(_card => _card._cardPairType.Split('|').ElementAt(1) == pickedToken);
+    //                            filteredCardList = filteredCards.ToList();
+
+    //                            if (filteredCardList.Count > 0)
+    //                            {
+    //                                Card randomPickHandCard = filteredCardList[Random.RandomRange(0, filteredCardList.Count - 1)];
+    //                                randomPickHandCard.matched = true;
+    //                                randomPickHandCard.matchedSide = Card.MatchedSide.Right;
+    //                                pickedCardSide.matchedSide = Card.MatchedSide.Both;
+
+    //                                action?.Invoke(randomPickHandCard, pickedCardSide, cardConnector);
+    //                            }
+
+    //                            else
+    //                            {
+    //                                Debug.Log($"skip turn because of none matched card found == {filteredCardList.Count}");
+    //                                StateController(States.SKIP_TURN);
+    //                            }
+    //                        }
+    //                    }
+
+    //                    else
+    //                    {
+    //                        Debug.Log($"skip turn because of no card connector found");
+    //                        StateController(States.SKIP_TURN);
+    //                    }
+    //                    break;
+    //                default:
+    //                    break;
+    //            }
+
+    //            break;
+    //        case Card.Facing.Horizontal:
+
+    //            switch (pickedCardSide.matchedSide)
+    //            {
+    //                case Card.MatchedSide.None:
+    //                    int randomSide = Random.Range(0, 1);
+
+    //                    //if randomside == 0, then pick top connectors
+    //                    if (randomSide == 0)
+    //                    {
+    //                        cardConnector = parentCardConnector.GetRandomFromActiveTopConnectors();
+
+    //                        if (cardConnector != null)
+    //                        {
+    //                            if (cardConnector.cardConnectorType == CardConnector.CardConnectorType.TopLeft)
+    //                            {
+    //                                pickedToken = cardTokens[0];
+    //                                filteredCards = handCards.OrderBy(_card => _card._cardPairType.Split('|').ElementAt(0) == pickedToken).Where(_card => _card._cardPairType.Split('|').ElementAt(0) == pickedToken);
+    //                                filteredCardList = filteredCards.ToList();
+
+    //                                if (filteredCardList.Count > 0)
+    //                                {
+    //                                    Card randomPickHandCard = filteredCardList[Random.RandomRange(0, filteredCardList.Count - 1)];
+    //                                    randomPickHandCard.matched = true;
+    //                                    randomPickHandCard.matchedSide = Card.MatchedSide.Left;
+    //                                    pickedCardSide.matchedSide = Card.MatchedSide.Right;
+
+    //                                    action?.Invoke(randomPickHandCard, pickedCardSide, cardConnector);
+    //                                }
+
+    //                                else
+    //                                {
+    //                                    StateController(States.SKIP_TURN);
+    //                                }
+    //                            }
+
+    //                            else
+    //                            {
+    //                                pickedToken = cardTokens[1];
+    //                                filteredCards = handCards.OrderBy(_card => _card._cardPairType.Split('|').ElementAt(1) == pickedToken).Where(_card => _card._cardPairType.Split('|').ElementAt(1) == pickedToken);
+    //                                filteredCardList = filteredCards.ToList();
+
+    //                                if (filteredCardList.Count > 0)
+    //                                {
+    //                                    Card randomPickHandCard = filteredCardList[Random.RandomRange(0, filteredCardList.Count - 1)];
+    //                                    randomPickHandCard.matched = true;
+    //                                    randomPickHandCard.matchedSide = Card.MatchedSide.Right;
+    //                                    pickedCardSide.matchedSide = Card.MatchedSide.Left;
+
+    //                                    action?.Invoke(randomPickHandCard, pickedCardSide, cardConnector);
+    //                                }
+
+    //                                else
+    //                                {
+    //                                    StateController(States.SKIP_TURN);
+    //                                }
+    //                            }
+    //                        }
+
+    //                        else
+    //                        {
+    //                            StateController(States.SKIP_TURN);
+    //                        }
+    //                    }
+    //                    //else if randomside == 1, then pick bottom connectors
+    //                    else
+    //                    {
+    //                        cardConnector = parentCardConnector.GetRandomFromActiveBotConnectors();
+
+    //                        if (cardConnector != null)
+    //                        {
+    //                            if (cardConnector.cardConnectorType == CardConnector.CardConnectorType.BottomRight)
+    //                            {
+    //                                pickedToken = cardTokens[1];
+    //                                filteredCards = handCards.OrderBy(_card => _card._cardPairType.Split('|').ElementAt(1) == pickedToken).Where(_card => _card._cardPairType.Split('|').ElementAt(1) == pickedToken);
+    //                                filteredCardList = filteredCards.ToList();
+
+    //                                if (filteredCardList.Count > 0)
+    //                                {
+    //                                    Card randomPickHandCard = filteredCardList[Random.RandomRange(0, filteredCardList.Count - 1)];
+    //                                    randomPickHandCard.matched = true;
+    //                                    randomPickHandCard.matchedSide = Card.MatchedSide.Right;
+    //                                    pickedCardSide.matchedSide = Card.MatchedSide.Left;
+
+    //                                    action?.Invoke(randomPickHandCard, pickedCardSide, cardConnector);
+    //                                }
+
+    //                                else
+    //                                {
+    //                                    StateController(States.SKIP_TURN);
+    //                                }
+
+    //                            }
+
+    //                            else
+    //                            {
+    //                                pickedToken = cardTokens[0];
+    //                                filteredCards = handCards.OrderBy(_card => _card._cardPairType.Split('|').ElementAt(0) == pickedToken).Where(_card => _card._cardPairType.Split('|').ElementAt(0) == pickedToken);
+    //                                filteredCardList = filteredCards.ToList();
+
+    //                                if (filteredCardList.Count > 0)
+    //                                {
+    //                                    Card randomPickHandCard = filteredCardList[Random.RandomRange(0, filteredCardList.Count - 1)];
+    //                                    randomPickHandCard.matched = true;
+    //                                    randomPickHandCard.matchedSide = Card.MatchedSide.Left;
+    //                                    pickedCardSide.matchedSide = Card.MatchedSide.Right;
+
+    //                                    action?.Invoke(randomPickHandCard, pickedCardSide, cardConnector);
+    //                                }
+
+    //                                else
+    //                                {
+    //                                    StateController(States.SKIP_TURN);
+    //                                }
+    //                            }
+    //                        }
+
+    //                        else
+    //                        {
+    //                            StateController(States.SKIP_TURN);
+    //                        }
+    //                    }
+    //                    break;
+    //                case Card.MatchedSide.Left:
+    //                    pickedToken = cardTokens[1];
+    //                    cardConnector = parentCardConnector.GetRandomFromActiveBotConnectors();
+
+    //                    if (cardConnector != null)
+    //                    {
+    //                        if (cardConnector.cardConnectorType == CardConnector.CardConnectorType.BottomRight)
+    //                        {
+    //                            filteredCards = handCards.OrderBy(_card => _card._cardPairType.Split('|').ElementAt(1) == pickedToken).Where(_card => _card._cardPairType.Split('|').ElementAt(1) == pickedToken);
+    //                            filteredCardList = filteredCards.ToList();
+
+    //                            if (filteredCardList.Count > 0)
+    //                            {
+    //                                Card randomPickHandCard = filteredCardList[Random.RandomRange(0, filteredCardList.Count - 1)];
+    //                                randomPickHandCard.matched = true;
+    //                                randomPickHandCard.matchedSide = Card.MatchedSide.Right;
+    //                                pickedCardSide.matchedSide = Card.MatchedSide.Both;
+
+    //                                action?.Invoke(randomPickHandCard, pickedCardSide, cardConnector);
+    //                            }
+
+    //                            else
+    //                            {
+    //                                Debug.Log($"skip turn because of none matched card found == {filteredCardList.Count}");
+    //                                StateController(States.SKIP_TURN);
+    //                            }
+
+    //                        }
+
+    //                        else
+    //                        {
+    //                            filteredCards = handCards.OrderBy(_card => _card._cardPairType.Split('|').ElementAt(0) == pickedToken).Where(_card => _card._cardPairType.Split('|').ElementAt(0) == pickedToken);
+    //                            filteredCardList = filteredCards.ToList();
+
+    //                            if (filteredCardList.Count > 0)
+    //                            {
+    //                                Card randomPickHandCard = filteredCardList[Random.RandomRange(0, filteredCardList.Count - 1)];
+    //                                randomPickHandCard.matched = true;
+    //                                randomPickHandCard.matchedSide = Card.MatchedSide.Left;
+    //                                pickedCardSide.matchedSide = Card.MatchedSide.Both;
+
+    //                                action?.Invoke(randomPickHandCard, pickedCardSide, cardConnector);
+    //                            }
+
+    //                            else
+    //                            {
+    //                                Debug.Log($"skip turn because of none matched card found == {filteredCardList.Count}");
+    //                                StateController(States.SKIP_TURN);
+    //                            }
+    //                        }
+    //                    }
+
+    //                    else
+    //                    {
+    //                        Debug.Log($"skip turn because of no card connector found");
+    //                        StateController(States.SKIP_TURN);
+    //                    }
+    //                    break;
+
+    //                case Card.MatchedSide.Right:
+    //                    pickedToken = cardTokens[0];
+    //                    cardConnector = parentCardConnector.GetRandomFromActiveTopConnectors();
+
+    //                    if (cardConnector != null)
+    //                    {
+    //                        if (cardConnector.cardConnectorType == CardConnector.CardConnectorType.TopLeft)
+    //                        {
+    //                            filteredCards = handCards.OrderBy(_card => _card._cardPairType.Split('|').ElementAt(0) == pickedToken).Where(_card => _card._cardPairType.Split('|').ElementAt(0) == pickedToken);
+    //                            filteredCardList = filteredCards.ToList();
+
+    //                            if (filteredCardList.Count > 0)
+    //                            {
+    //                                Card randomPickHandCard = filteredCardList[Random.RandomRange(0, filteredCardList.Count - 1)];
+    //                                randomPickHandCard.matched = true;
+    //                                randomPickHandCard.matchedSide = Card.MatchedSide.Left;
+    //                                pickedCardSide.matchedSide = Card.MatchedSide.Both;
+
+    //                                action?.Invoke(randomPickHandCard, pickedCardSide, cardConnector);
+    //                            }
+
+    //                            else
+    //                            {
+    //                                Debug.Log($"skip turn because of none matched card found == {filteredCardList.Count}");
+    //                                StateController(States.SKIP_TURN);
+    //                            }
+    //                        }
+
+    //                        else
+    //                        {
+    //                            filteredCards = handCards.OrderBy(_card => _card._cardPairType.Split('|').ElementAt(1) == pickedToken).Where(_card => _card._cardPairType.Split('|').ElementAt(1) == pickedToken);
+    //                            filteredCardList = filteredCards.ToList();
+
+    //                            if (filteredCardList.Count > 0)
+    //                            {
+    //                                Card randomPickHandCard = filteredCardList[Random.RandomRange(0, filteredCardList.Count - 1)];
+    //                                randomPickHandCard.matched = true;
+    //                                randomPickHandCard.matchedSide = Card.MatchedSide.Right;
+    //                                pickedCardSide.matchedSide = Card.MatchedSide.Both;
+
+    //                                action?.Invoke(randomPickHandCard, pickedCardSide, cardConnector);
+    //                            }
+
+    //                            else
+    //                            {
+    //                                Debug.Log($"skip turn because of none matched card found == {filteredCardList.Count}");
+    //                                StateController(States.SKIP_TURN);
+    //                            }
+    //                        }
+    //                    }
+
+    //                    else
+    //                    {
+    //                        Debug.Log($"skip turn because of no card connector found");
+    //                        StateController(States.SKIP_TURN);
+    //                    }
+    //                    break;
+    //                default:
+    //                    break;
+    //            }
+
+    //            break;
+    //        default:
+    //            break;
+    //    }
+    //}
+
+
+    private void FindMatchingCard(Action<Card, Card, CardConnector> action = null)
     {
-        Debug.Log("processing turn");
-        int randomPickCardSide = Random.Range(0, 1);
-        Card pickedCardSide = BoardManager.Instance.droppableCardList[randomPickCardSide];
-        ParentCardConnector parentCardConnector = pickedCardSide.mainConnector.GetComponent<ParentCardConnector>();
-        string[] cardTokens = pickedCardSide._cardPairType.Split('|');
+        bool found = false;
+        List<Card> droppablePairingCards = new List<Card>(BoardManager.Instance.droppableCardList);
+
+        int reverseDroppableList = Random.Range(0, 1);
+
 
         //these parameters needed for filtering cards in ai hands which matched current picked token in pairing card
+        Card pickedCardSide;
+        string[] cardTokens;
         string pickedToken;
-        int randomConnectorPick;
-        CardConnector cardConnector;
+        ParentCardConnector parentCardConnector;
+        List<CardConnector> shuffledConnectors = new List<CardConnector>();
         IEnumerable<Card> filteredCards;
         List<Card> filteredCardList = new List<Card>();
 
-        switch (pickedCardSide.facing)
+        if (reverseDroppableList == 0)
         {
-            case Card.Facing.Vertical:
-                switch (pickedCardSide.matchedSide)
+            for (int i = 0; i < droppablePairingCards.Count; i++)
+            {
+                pickedCardSide = droppablePairingCards[i];
+                cardTokens = pickedCardSide._cardPairType.Split('|');
+                parentCardConnector = pickedCardSide.mainConnector.GetComponent<ParentCardConnector>();
+                shuffledConnectors = parentCardConnector.GetShuffledActiveConnectors();
+
+                for (int j = 0; j < shuffledConnectors.Count; j++)
                 {
-                    case Card.MatchedSide.None:
-                        int randomSide = Random.Range(0, 1);
+                    CardConnector connector = shuffledConnectors[j];
+                    pickedToken = cardTokens[connector.parentCardPairingIndex];
+                    filteredCards = handCards.OrderBy(_card => _card._cardPairType.Split('|')
+                                                .ElementAt(connector.droppedCardPairingIndex) == pickedToken)
+                                                .Where(_card => _card._cardPairType
+                                                .Split('|').ElementAt(connector.droppedCardPairingIndex) == pickedToken);
+                    filteredCardList = filteredCards.ToList();
 
-                        //if randomSide == 0, then pick top side connectors
-                        if (randomSide == 0)
+                    if (filteredCardList.Count > 0)
+                    {
+                        Card randomPickHandCard = filteredCardList[Random.RandomRange(0, filteredCardList.Count - 1)];
+                        randomPickHandCard.matched = true;
+                        randomPickHandCard.matchedSide = connector.matchedSide;
+
+                        if (pickedCardSide.matchedSide != Card.MatchedSide.None)
                         {
-                            cardConnector = parentCardConnector.GetRandomFromActiveTopConnectors();
-
-                            if (cardConnector != null)
-                            {
-                                if (cardConnector.cardConnectorType == CardConnector.CardConnectorType.TopRight)
-                                {
-                                    pickedToken = cardTokens[0];
-                                    filteredCards = handCards.OrderBy(_card => _card._cardPairType.Split('|').ElementAt(0) == pickedToken).Where(_card => _card._cardPairType.Split('|').ElementAt(0) == pickedToken);
-                                    filteredCardList = filteredCards.ToList();
-
-                                    if (filteredCardList.Count > 0)
-                                    {
-                                        Card randomPickHandCard = filteredCardList[Random.RandomRange(0, filteredCardList.Count - 1)];
-                                        randomPickHandCard.matched = true;
-                                        randomPickHandCard.matchedSide = Card.MatchedSide.Left;
-                                        pickedCardSide.matchedSide = Card.MatchedSide.Right;
-
-                                        action?.Invoke(randomPickHandCard, pickedCardSide, cardConnector);
-                                    }
-
-                                    else
-                                    {
-                                        Debug.Log($"skip turn because of none matched card found == {filteredCardList.Count}");
-                                        StateController(States.SKIP_TURN);
-                                    }
-                                }
-
-                                else
-                                {
-                                    pickedToken = cardTokens[1];
-                                    filteredCards = handCards.OrderBy(_card => _card._cardPairType.Split('|').ElementAt(1) == pickedToken).Where(_card => _card._cardPairType.Split('|').ElementAt(1) == pickedToken);
-                                    filteredCardList = filteredCards.ToList();
-
-                                    if (filteredCardList.Count > 0)
-                                    {
-                                        Card randomPickHandCard = filteredCardList[Random.RandomRange(0, filteredCardList.Count - 1)];
-                                        randomPickHandCard.matched = true;
-                                        randomPickHandCard.matchedSide = Card.MatchedSide.Right;
-                                        pickedCardSide.matchedSide = Card.MatchedSide.Left;
-
-                                        action?.Invoke(randomPickHandCard, pickedCardSide, cardConnector);
-                                    }
-
-                                    else
-                                    {
-                                        Debug.Log($"skip turn because of none matched card found == {filteredCardList.Count}");
-                                        StateController(States.SKIP_TURN);
-                                    }
-                                }
-                            }
-
-                            else
-                            {
-                                Debug.Log($"skip turn because of no card connector found");
-                                StateController(States.SKIP_TURN);
-                            }
-                        }
-
-                        //else if randomSide == 1, then pick bottom side connectors
-                        else
-                        {
-                            cardConnector = parentCardConnector.GetRandomFromActiveBotConnectors();
-
-                            if (cardConnector != null)
-                            {
-                                if (cardConnector.cardConnectorType == CardConnector.CardConnectorType.BottomLeft)
-                                {
-                                    pickedToken = cardTokens[1];
-                                    filteredCards = handCards.OrderBy(_card => _card._cardPairType.Split('|').ElementAt(1) == pickedToken).Where(_card => _card._cardPairType.Split('|').ElementAt(1) == pickedToken);
-                                    filteredCardList = filteredCards.ToList();
-
-                                    if (filteredCardList.Count > 0)
-                                    {
-                                        Card randomPickHandCard = filteredCardList[Random.RandomRange(0, filteredCardList.Count - 1)];
-                                        randomPickHandCard.matched = true;
-                                        randomPickHandCard.matchedSide = Card.MatchedSide.Right;
-                                        pickedCardSide.matchedSide = Card.MatchedSide.Left;
-
-                                        action?.Invoke(randomPickHandCard, pickedCardSide, cardConnector);
-                                    }
-
-                                    else
-                                    {
-                                        Debug.Log($"skip turn because of none matched card found == {filteredCardList.Count}");
-                                        StateController(States.SKIP_TURN);
-                                    }
-
-                                }
-
-                                else
-                                {
-                                    pickedToken = cardTokens[0];
-                                    filteredCards = handCards.OrderBy(_card => _card._cardPairType.Split('|').ElementAt(0) == pickedToken).Where(_card => _card._cardPairType.Split('|').ElementAt(0) == pickedToken);
-                                    filteredCardList = filteredCards.ToList();
-
-                                    if (filteredCardList.Count > 0)
-                                    {
-                                        Card randomPickHandCard = filteredCardList[Random.RandomRange(0, filteredCardList.Count - 1)];
-                                        randomPickHandCard.matched = true;
-                                        randomPickHandCard.matchedSide = Card.MatchedSide.Left;
-                                        pickedCardSide.matchedSide = Card.MatchedSide.Right;
-
-                                        action?.Invoke(randomPickHandCard, pickedCardSide, cardConnector);
-                                    }
-
-                                    else
-                                    {
-                                        Debug.Log($"skip turn because of none matched card found == {filteredCardList.Count}");
-                                        StateController(States.SKIP_TURN);
-                                    }
-                                }
-                            }
-
-                            else
-                            {
-                                Debug.Log($"skip turn because of no card connector found");
-                                StateController(States.SKIP_TURN);
-                            }
-                        }
-                        break;
-
-                    case Card.MatchedSide.Left:
-                        pickedToken = cardTokens[1];
-                        cardConnector = parentCardConnector.GetRandomFromActiveBotConnectors();
-
-                        if (cardConnector != null)
-                        {
-                            if (cardConnector.cardConnectorType == CardConnector.CardConnectorType.BottomLeft)
-                            {
-                                filteredCards = handCards.OrderBy(_card => _card._cardPairType.Split('|').ElementAt(1) == pickedToken).Where(_card => _card._cardPairType.Split('|').ElementAt(1) == pickedToken);
-                                filteredCardList = filteredCards.ToList();
-
-                                if (filteredCardList.Count > 0)
-                                {
-                                    Card randomPickHandCard = filteredCardList[Random.RandomRange(0, filteredCardList.Count - 1)];
-                                    randomPickHandCard.matched = true;
-                                    randomPickHandCard.matchedSide = Card.MatchedSide.Right;
-                                    pickedCardSide.matchedSide = Card.MatchedSide.Both;
-
-                                    action?.Invoke(randomPickHandCard, pickedCardSide, cardConnector);
-                                }
-
-                                else
-                                {
-                                    Debug.Log($"skip turn because of none matched card found == {filteredCardList.Count}");
-                                    StateController(States.SKIP_TURN);
-                                }
-
-                            }
-
-                            else
-                            {
-                                filteredCards = handCards.OrderBy(_card => _card._cardPairType.Split('|').ElementAt(0) == pickedToken).Where(_card => _card._cardPairType.Split('|').ElementAt(0) == pickedToken);
-                                filteredCardList = filteredCards.ToList();
-
-                                if (filteredCardList.Count > 0)
-                                {
-                                    Card randomPickHandCard = filteredCardList[Random.RandomRange(0, filteredCardList.Count - 1)];
-                                    randomPickHandCard.matched = true;
-                                    randomPickHandCard.matchedSide = Card.MatchedSide.Left;
-                                    pickedCardSide.matchedSide = Card.MatchedSide.Both;
-
-                                    action?.Invoke(randomPickHandCard, pickedCardSide, cardConnector);
-                                }
-
-                                else
-                                {
-                                    Debug.Log($"skip turn because of none matched card found == {filteredCardList.Count}");
-                                    StateController(States.SKIP_TURN);
-                                }
-                            }
+                            pickedCardSide.matchedSide = Card.MatchedSide.Both;
                         }
 
                         else
                         {
-                            Debug.Log($"skip turn because of no card connector found");
-                            StateController(States.SKIP_TURN);
+                            pickedCardSide.matchedSide = connector.parentMatchedSide;
                         }
 
+                        found = true;
+                        action?.Invoke(randomPickHandCard, pickedCardSide, connector);
+
+                        Debug.Log($"matching card found in hand {randomPickHandCard._cardId} :: {randomPickHandCard._cardPairType}");
                         break;
+                    }
 
-                    case Card.MatchedSide.Right:
-                        pickedToken = cardTokens[0];
-                        cardConnector = parentCardConnector.GetRandomFromActiveTopConnectors();
-
-                        if (cardConnector != null)
-                        {
-                            if (cardConnector.cardConnectorType == CardConnector.CardConnectorType.TopRight)
-                            {
-                                filteredCards = handCards.OrderBy(_card => _card._cardPairType.Split('|').ElementAt(0) == pickedToken).Where(_card => _card._cardPairType.Split('|').ElementAt(0) == pickedToken);
-                                filteredCardList = filteredCards.ToList();
-
-                                if (filteredCardList.Count > 0)
-                                {
-                                    Card randomPickHandCard = filteredCardList[Random.RandomRange(0, filteredCardList.Count - 1)];
-                                    randomPickHandCard.matched = true;
-                                    randomPickHandCard.matchedSide = Card.MatchedSide.Left;
-                                    pickedCardSide.matchedSide = Card.MatchedSide.Both;
-
-                                    action?.Invoke(randomPickHandCard, pickedCardSide, cardConnector);
-                                }
-
-                                else
-                                {
-                                    Debug.Log($"skip turn because of none matched card found == {filteredCardList.Count}");
-                                    StateController(States.SKIP_TURN);
-                                }
-                            }
-
-                            else
-                            {
-                                filteredCards = handCards.OrderBy(_card => _card._cardPairType.Split('|').ElementAt(1) == pickedToken).Where(_card => _card._cardPairType.Split('|').ElementAt(1) == pickedToken);
-                                filteredCardList = filteredCards.ToList();
-
-                                if (filteredCardList.Count > 0)
-                                {
-                                    Card randomPickHandCard = filteredCardList[Random.RandomRange(0, filteredCardList.Count - 1)];
-                                    randomPickHandCard.matched = true;
-                                    randomPickHandCard.matchedSide = Card.MatchedSide.Right;
-                                    pickedCardSide.matchedSide = Card.MatchedSide.Both;
-
-                                    action?.Invoke(randomPickHandCard, pickedCardSide, cardConnector);
-                                }
-
-                                else
-                                {
-                                    Debug.Log($"skip turn because of none matched card found == {filteredCardList.Count}");
-                                    StateController(States.SKIP_TURN);
-                                }
-                            }
-                        }
-
-                        else
-                        {
-                            Debug.Log($"skip turn because of no card connector found");
-                            StateController(States.SKIP_TURN);
-                        }
-                        break;
-                    default:
-                        break;
+                    else
+                    {
+                        continue;
+                    }
                 }
 
-                break;
-            case Card.Facing.Horizontal:
-
-                switch (pickedCardSide.matchedSide)
+                if (i == droppablePairingCards.Count - 1)
                 {
-                    case Card.MatchedSide.None:
-                        int randomSide = Random.Range(0, 1);
-
-                        //if randomside == 0, then pick top connectors
-                        if (randomSide == 0)
-                        {
-                            cardConnector = parentCardConnector.GetRandomFromActiveTopConnectors();
-
-                            if (cardConnector != null)
-                            {
-                                if (cardConnector.cardConnectorType == CardConnector.CardConnectorType.TopLeft)
-                                {
-                                    pickedToken = cardTokens[0];
-                                    filteredCards = handCards.OrderBy(_card => _card._cardPairType.Split('|').ElementAt(0) == pickedToken).Where(_card => _card._cardPairType.Split('|').ElementAt(0) == pickedToken);
-                                    filteredCardList = filteredCards.ToList();
-
-                                    if (filteredCardList.Count > 0)
-                                    {
-                                        Card randomPickHandCard = filteredCardList[Random.RandomRange(0, filteredCardList.Count - 1)];
-                                        randomPickHandCard.matched = true;
-                                        randomPickHandCard.matchedSide = Card.MatchedSide.Left;
-                                        pickedCardSide.matchedSide = Card.MatchedSide.Right;
-
-                                        action?.Invoke(randomPickHandCard, pickedCardSide, cardConnector);
-                                    }
-
-                                    else
-                                    {
-                                        StateController(States.SKIP_TURN);
-                                    }
-                                }
-
-                                else
-                                {
-                                    pickedToken = cardTokens[1];
-                                    filteredCards = handCards.OrderBy(_card => _card._cardPairType.Split('|').ElementAt(1) == pickedToken).Where(_card => _card._cardPairType.Split('|').ElementAt(1) == pickedToken);
-                                    filteredCardList = filteredCards.ToList();
-
-                                    if (filteredCardList.Count > 0)
-                                    {
-                                        Card randomPickHandCard = filteredCardList[Random.RandomRange(0, filteredCardList.Count - 1)];
-                                        randomPickHandCard.matched = true;
-                                        randomPickHandCard.matchedSide = Card.MatchedSide.Right;
-                                        pickedCardSide.matchedSide = Card.MatchedSide.Left;
-
-                                        action?.Invoke(randomPickHandCard, pickedCardSide, cardConnector);
-                                    }
-
-                                    else
-                                    {
-                                        StateController(States.SKIP_TURN);
-                                    }
-                                }
-                            }
-
-                            else
-                            {
-                                StateController(States.SKIP_TURN);
-                            }
-                        }
-                        //else if randomside == 1, then pick bottom connectors
-                        else
-                        {
-                            cardConnector = parentCardConnector.GetRandomFromActiveBotConnectors();
-
-                            if (cardConnector != null)
-                            {
-                                if (cardConnector.cardConnectorType == CardConnector.CardConnectorType.BottomRight)
-                                {
-                                    pickedToken = cardTokens[1];
-                                    filteredCards = handCards.OrderBy(_card => _card._cardPairType.Split('|').ElementAt(1) == pickedToken).Where(_card => _card._cardPairType.Split('|').ElementAt(1) == pickedToken);
-                                    filteredCardList = filteredCards.ToList();
-
-                                    if (filteredCardList.Count > 0)
-                                    {
-                                        Card randomPickHandCard = filteredCardList[Random.RandomRange(0, filteredCardList.Count - 1)];
-                                        randomPickHandCard.matched = true;
-                                        randomPickHandCard.matchedSide = Card.MatchedSide.Right;
-                                        pickedCardSide.matchedSide = Card.MatchedSide.Left;
-
-                                        action?.Invoke(randomPickHandCard, pickedCardSide, cardConnector);
-                                    }
-
-                                    else
-                                    {
-                                        StateController(States.SKIP_TURN);
-                                    }
-
-                                }
-
-                                else
-                                {
-                                    pickedToken = cardTokens[0];
-                                    filteredCards = handCards.OrderBy(_card => _card._cardPairType.Split('|').ElementAt(0) == pickedToken).Where(_card => _card._cardPairType.Split('|').ElementAt(0) == pickedToken);
-                                    filteredCardList = filteredCards.ToList();
-
-                                    if (filteredCardList.Count > 0)
-                                    {
-                                        Card randomPickHandCard = filteredCardList[Random.RandomRange(0, filteredCardList.Count - 1)];
-                                        randomPickHandCard.matched = true;
-                                        randomPickHandCard.matchedSide = Card.MatchedSide.Left;
-                                        pickedCardSide.matchedSide = Card.MatchedSide.Right;
-
-                                        action?.Invoke(randomPickHandCard, pickedCardSide, cardConnector);
-                                    }
-
-                                    else
-                                    {
-                                        StateController(States.SKIP_TURN);
-                                    }
-                                }
-                            }
-
-                            else
-                            {
-                                StateController(States.SKIP_TURN);
-                            }
-                        }
+                    if (found)
+                    {
+                        Debug.Log($"matching card found in hand, done processing");
                         break;
-                    case Card.MatchedSide.Left:
-                        pickedToken = cardTokens[1];
-                        cardConnector = parentCardConnector.GetRandomFromActiveBotConnectors();
+                    }
 
-                        if (cardConnector != null)
-                        {
-                            if (cardConnector.cardConnectorType == CardConnector.CardConnectorType.BottomRight)
-                            {
-                                filteredCards = handCards.OrderBy(_card => _card._cardPairType.Split('|').ElementAt(1) == pickedToken).Where(_card => _card._cardPairType.Split('|').ElementAt(1) == pickedToken);
-                                filteredCardList = filteredCards.ToList();
-
-                                if (filteredCardList.Count > 0)
-                                {
-                                    Card randomPickHandCard = filteredCardList[Random.RandomRange(0, filteredCardList.Count - 1)];
-                                    randomPickHandCard.matched = true;
-                                    randomPickHandCard.matchedSide = Card.MatchedSide.Right;
-                                    pickedCardSide.matchedSide = Card.MatchedSide.Both;
-
-                                    action?.Invoke(randomPickHandCard, pickedCardSide, cardConnector);
-                                }
-
-                                else
-                                {
-                                    Debug.Log($"skip turn because of none matched card found == {filteredCardList.Count}");
-                                    StateController(States.SKIP_TURN);
-                                }
-
-                            }
-
-                            else
-                            {
-                                filteredCards = handCards.OrderBy(_card => _card._cardPairType.Split('|').ElementAt(0) == pickedToken).Where(_card => _card._cardPairType.Split('|').ElementAt(0) == pickedToken);
-                                filteredCardList = filteredCards.ToList();
-
-                                if (filteredCardList.Count > 0)
-                                {
-                                    Card randomPickHandCard = filteredCardList[Random.RandomRange(0, filteredCardList.Count - 1)];
-                                    randomPickHandCard.matched = true;
-                                    randomPickHandCard.matchedSide = Card.MatchedSide.Left;
-                                    pickedCardSide.matchedSide = Card.MatchedSide.Both;
-
-                                    action?.Invoke(randomPickHandCard, pickedCardSide, cardConnector);
-                                }
-
-                                else
-                                {
-                                    Debug.Log($"skip turn because of none matched card found == {filteredCardList.Count}");
-                                    StateController(States.SKIP_TURN);
-                                }
-                            }
-                        }
-
-                        else
-                        {
-                            Debug.Log($"skip turn because of no card connector found");
-                            StateController(States.SKIP_TURN);
-                        }
-                        break;
-
-                    case Card.MatchedSide.Right:
-                        pickedToken = cardTokens[0];
-                        cardConnector = parentCardConnector.GetRandomFromActiveTopConnectors();
-
-                        if (cardConnector != null)
-                        {
-                            if (cardConnector.cardConnectorType == CardConnector.CardConnectorType.TopLeft)
-                            {
-                                filteredCards = handCards.OrderBy(_card => _card._cardPairType.Split('|').ElementAt(0) == pickedToken).Where(_card => _card._cardPairType.Split('|').ElementAt(0) == pickedToken);
-                                filteredCardList = filteredCards.ToList();
-
-                                if (filteredCardList.Count > 0)
-                                {
-                                    Card randomPickHandCard = filteredCardList[Random.RandomRange(0, filteredCardList.Count - 1)];
-                                    randomPickHandCard.matched = true;
-                                    randomPickHandCard.matchedSide = Card.MatchedSide.Left;
-                                    pickedCardSide.matchedSide = Card.MatchedSide.Both;
-
-                                    action?.Invoke(randomPickHandCard, pickedCardSide, cardConnector);
-                                }
-
-                                else
-                                {
-                                    Debug.Log($"skip turn because of none matched card found == {filteredCardList.Count}");
-                                    StateController(States.SKIP_TURN);
-                                }
-                            }
-
-                            else
-                            {
-                                filteredCards = handCards.OrderBy(_card => _card._cardPairType.Split('|').ElementAt(1) == pickedToken).Where(_card => _card._cardPairType.Split('|').ElementAt(1) == pickedToken);
-                                filteredCardList = filteredCards.ToList();
-
-                                if (filteredCardList.Count > 0)
-                                {
-                                    Card randomPickHandCard = filteredCardList[Random.RandomRange(0, filteredCardList.Count - 1)];
-                                    randomPickHandCard.matched = true;
-                                    randomPickHandCard.matchedSide = Card.MatchedSide.Right;
-                                    pickedCardSide.matchedSide = Card.MatchedSide.Both;
-
-                                    action?.Invoke(randomPickHandCard, pickedCardSide, cardConnector);
-                                }
-
-                                else
-                                {
-                                    Debug.Log($"skip turn because of none matched card found == {filteredCardList.Count}");
-                                    StateController(States.SKIP_TURN);
-                                }
-                            }
-                        }
-
-                        else
-                        {
-                            Debug.Log($"skip turn because of no card connector found");
-                            StateController(States.SKIP_TURN);
-                        }
-                        break;
-                    default:
-                        break;
+                    else
+                    {
+                        StateController(States.SKIP_TURN);
+                        Debug.Log($"none matching in both side, skip turn for ai");
+                    }
                 }
 
-                break;
-            default:
-                break;
+                else
+                {
+                    if (found)
+                    {
+                        Debug.Log($"matching card found in hand, done processing");
+                        break;
+                    }
+                }
+                
+            }
+        }
+
+        else
+        {
+            Debug.Log("reverse droppable card list");
+            droppablePairingCards.Reverse();
+
+            for (int i = 0; i < droppablePairingCards.Count; i++)
+            {
+                pickedCardSide = droppablePairingCards[i];
+                cardTokens = pickedCardSide._cardPairType.Split('|');
+                parentCardConnector = pickedCardSide.mainConnector.GetComponent<ParentCardConnector>();
+                shuffledConnectors = parentCardConnector.GetShuffledActiveConnectors();
+
+                for (int j = 0; j < shuffledConnectors.Count; j++)
+                {
+                    CardConnector connector = shuffledConnectors[j];
+                    pickedToken = cardTokens[connector.parentCardPairingIndex];
+                    filteredCards = handCards.OrderBy(_card => _card._cardPairType.Split('|')
+                                                .ElementAt(connector.droppedCardPairingIndex) == pickedToken)
+                                                .Where(_card => _card._cardPairType
+                                                .Split('|').ElementAt(connector.droppedCardPairingIndex) == pickedToken);
+                    filteredCardList = filteredCards.ToList();
+
+                    if (filteredCardList.Count > 0)
+                    {
+                        Card randomPickHandCard = filteredCardList[Random.RandomRange(0, filteredCardList.Count - 1)];
+                        randomPickHandCard.matched = true;
+                        randomPickHandCard.matchedSide = connector.matchedSide;
+
+                        if (pickedCardSide.matchedSide != Card.MatchedSide.None)
+                        {
+                            pickedCardSide.matchedSide = Card.MatchedSide.Both;
+                        }
+
+                        else
+                        {
+                            pickedCardSide.matchedSide = connector.parentMatchedSide;
+                        }
+
+                        found = true;
+                        action?.Invoke(randomPickHandCard, pickedCardSide, connector);
+
+                        Debug.Log($"matching card found in hand {randomPickHandCard._cardId} :: {randomPickHandCard._cardPairType}");
+                        break;
+                    }
+
+                    else
+                    {
+                        continue;
+                    }
+                }
+
+                if (i == droppablePairingCards.Count - 1)
+                {
+                    if (found)
+                    {
+                        Debug.Log($"matching card found in hand, done processing");
+                        break;
+                    }
+
+                    else
+                    {
+                        StateController(States.SKIP_TURN);
+                        Debug.Log($"none matching in both side, skip turn for ai");
+                    }
+                }
+
+                else
+                {
+                    if (found)
+                    {
+                        Debug.Log($"matching card found in hand, done processing");
+                        break;
+                    }
+                }
+            }
         }
     }
 
+
+
     
+
+
     #endregion
 
-#region END_TURN
+    #region END_TURN
     private IEnumerator HandleEndTurn()
     {
         yield return new WaitForSeconds(1.5f);

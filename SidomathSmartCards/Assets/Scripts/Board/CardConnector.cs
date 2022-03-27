@@ -5,12 +5,17 @@ public class CardConnector : MonoBehaviour, ICanvasRaycastFilter
 {
     public RectTransform rectTransform;
     public CardConnectorType cardConnectorType;
+    public Facing facing;
     public Animator animator;
     public new BoxCollider2D collider2D;
     public bool droppable = true;
     public bool dropped = false;
     public string cardConnectorTileIndex = "";
 
+    public int droppedCardPairingIndex;
+    public int parentCardPairingIndex;
+    public Card.MatchedSide matchedSide;
+    public Card.MatchedSide parentMatchedSide;
     public Card draggedCard = null;
     public Tile tileBelow = null;
 
@@ -141,5 +146,11 @@ public class CardConnector : MonoBehaviour, ICanvasRaycastFilter
         Bottom = 3,
         BottomRight = 4,
         BottomLeft = 5
+    }
+
+    public enum Facing
+    {
+        VERTICAL = 0,
+        HORIZONTAL = 1
     }
 }

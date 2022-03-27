@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 public class ParentCardConnector : MonoBehaviour
 {
@@ -13,8 +14,42 @@ public class ParentCardConnector : MonoBehaviour
         IEnumerable<CardConnector> connectors = allCardConnector.Where(connector => connector.gameObject.active == true);
         List<CardConnector> activeConnectors = new List<CardConnector>(connectors.ToList());
 
+        if (activeConnectors.Count > 0)
+        {
+            return activeConnectors;
+        }
+
+        else
+        {
+            return null;
+        }
+    }
+
+    public List<CardConnector> GetShuffledActiveConnectors()
+    {
+        int shuffledCount = 0;
+        IEnumerable<CardConnector> connectors = allCardConnector.Where(connector => connector.gameObject.active == true);
+        List<CardConnector> activeConnectors = new List<CardConnector>(connectors.ToList());
+
+        for (int i = 0; i < activeConnectors.Count; i++)
+        {
+            CardConnector tempConnector = activeConnectors[i];
+            int randomIndex = Random.Range(i, activeConnectors.Count);
+            activeConnectors[i] = activeConnectors[randomIndex];
+            activeConnectors[randomIndex] = tempConnector;
+
+            shuffledCount++;
+
+            if (shuffledCount == activeConnectors.Count)
+            {
+                Debug.Log($"Shuffle connectors done {shuffledCount}");
+                break;
+            }
+        }
+
         return activeConnectors;
     }
+
 
     public List<CardConnector> GetTopActiveConnectors()
     {

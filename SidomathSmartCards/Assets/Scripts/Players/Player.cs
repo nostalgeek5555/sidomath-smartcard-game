@@ -184,6 +184,15 @@ public class Player : ActorBase
         GameplayManager.Instance.actorGettingTurn = GetComponent<ActorBase>();
 
         turn = true;
+        skipButton.enabled = true;
+
+        foreach (Card card in handCards)
+        {
+            card.canBePick = true;
+            card.draggable = true;
+        }
+        
+
 
         if (health > 1)
         {
@@ -208,6 +217,14 @@ public class Player : ActorBase
 
     private void HandleSkipTurn()
     {
+        skipButton.enabled = false;
+        foreach (Card card in handCards)
+        {
+            card.canBePick = false;
+            card.draggable = false;
+            card.cardHighlight.SetActive(false);
+        }
+
         Debug.Log("skip turn");
         if (playerState == PlayerState.GET_TURN)
         {

@@ -118,6 +118,11 @@ public class BoardManager : MonoBehaviour
                         case CardConnector.CardConnectorType.Top:
                             if (tileIndexY - 1 >= 0)
                             {
+                                cardConnector.facing = CardConnector.Facing.VERTICAL;
+                                cardConnector.matchedSide = Card.MatchedSide.Right;
+                                cardConnector.parentMatchedSide = Card.MatchedSide.Left;
+                                cardConnector.parentCardPairingIndex = 0;
+                                cardConnector.droppedCardPairingIndex = 1;
                                 connectedTile = tilesOnBoards[tileIndexX, tileIndexY - 1];
                                 cardConnector.tileBelow = connectedTile;
                                 cardConnector.tileBelow.haveCardConnector = true;
@@ -136,6 +141,11 @@ public class BoardManager : MonoBehaviour
                         case CardConnector.CardConnectorType.TopRight:
                             if (tileIndexX + 1 < boardWidth)
                             {
+                                cardConnector.facing = CardConnector.Facing.HORIZONTAL;
+                                cardConnector.matchedSide = Card.MatchedSide.Left;
+                                cardConnector.parentMatchedSide = Card.MatchedSide.Left;
+                                cardConnector.parentCardPairingIndex = 0;
+                                cardConnector.droppedCardPairingIndex = 1;
                                 connectedTile = tilesOnBoards[tileIndexX + 1, tileIndexY];
                                 cardConnector.tileBelow = connectedTile;
                                 cardConnector.tileBelow.haveCardConnector = true;
@@ -153,6 +163,11 @@ public class BoardManager : MonoBehaviour
                         case CardConnector.CardConnectorType.TopLeft:
                             if (tileIndexX - 1 >= 0)
                             {
+                                cardConnector.facing = CardConnector.Facing.HORIZONTAL;
+                                cardConnector.matchedSide = Card.MatchedSide.Right;
+                                cardConnector.parentMatchedSide = Card.MatchedSide.Left;
+                                cardConnector.parentCardPairingIndex = 0;
+                                cardConnector.droppedCardPairingIndex = 0;
                                 connectedTile = tilesOnBoards[tileIndexX - 1, tileIndexY];
                                 cardConnector.tileBelow = connectedTile;
                                 cardConnector.tileBelow.haveCardConnector = true;
@@ -182,6 +197,11 @@ public class BoardManager : MonoBehaviour
                         case CardConnector.CardConnectorType.Bottom:
                             if (tileIndexY + 1 < boardHeight)
                             {
+                                cardConnector.facing = CardConnector.Facing.VERTICAL;
+                                cardConnector.matchedSide = Card.MatchedSide.Left;
+                                cardConnector.parentMatchedSide = Card.MatchedSide.Right;
+                                cardConnector.parentCardPairingIndex = 1;
+                                cardConnector.droppedCardPairingIndex = 0;
                                 connectedTile = tilesOnBoards[tileIndexX, tileIndexY + 1];
                                 cardConnector.tileBelow = connectedTile;
                                 cardConnector.tileBelow.haveCardConnector = true;
@@ -200,6 +220,11 @@ public class BoardManager : MonoBehaviour
                         case CardConnector.CardConnectorType.BottomRight:
                             if (tileIndexX + 1 < boardWidth)
                             {
+                                cardConnector.facing = CardConnector.Facing.HORIZONTAL;
+                                cardConnector.matchedSide = Card.MatchedSide.Left;
+                                cardConnector.parentMatchedSide = Card.MatchedSide.Right;
+                                cardConnector.parentCardPairingIndex = 1;
+                                cardConnector.droppedCardPairingIndex = 0;
                                 connectedTile = tilesOnBoards[tileIndexX + 1, tileIndexY];
                                 cardConnector.tileBelow = connectedTile;
                                 cardConnector.tileBelow.haveCardConnector = true;
@@ -217,6 +242,11 @@ public class BoardManager : MonoBehaviour
                         case CardConnector.CardConnectorType.BottomLeft:
                             if (tileIndexX - 1 >= 0)
                             {
+                                cardConnector.facing = CardConnector.Facing.HORIZONTAL;
+                                cardConnector.matchedSide = Card.MatchedSide.Right;
+                                cardConnector.parentMatchedSide = Card.MatchedSide.Right;
+                                cardConnector.parentCardPairingIndex = 1;
+                                cardConnector.droppedCardPairingIndex = 1;
                                 connectedTile = tilesOnBoards[tileIndexX - 1, tileIndexY];
                                 cardConnector.tileBelow = connectedTile;
                                 cardConnector.tileBelow.haveCardConnector = true;
@@ -248,6 +278,11 @@ public class BoardManager : MonoBehaviour
                         case CardConnector.CardConnectorType.Top:
                             if (tileIndexX - 1 >= 0)
                             {
+                                cardConnector.facing = CardConnector.Facing.HORIZONTAL;
+                                cardConnector.matchedSide = Card.MatchedSide.Right;
+                                cardConnector.parentMatchedSide = Card.MatchedSide.Left;
+                                cardConnector.parentCardPairingIndex = 0;
+                                cardConnector.droppedCardPairingIndex = 1;
                                 connectedTile = tilesOnBoards[tileIndexX - 1, tileIndexY];
                                 cardConnector.tileBelow = connectedTile;
                                 cardConnector.tileBelow.haveCardConnector = true;
@@ -266,6 +301,11 @@ public class BoardManager : MonoBehaviour
                         case CardConnector.CardConnectorType.TopRight:
                             if (tileIndexY - 1 >= 0)
                             {
+                                cardConnector.facing = CardConnector.Facing.VERTICAL;
+                                cardConnector.matchedSide = Card.MatchedSide.Right;
+                                cardConnector.parentMatchedSide = Card.MatchedSide.Left;
+                                cardConnector.parentCardPairingIndex = 0;
+                                cardConnector.droppedCardPairingIndex = 1;
                                 connectedTile = tilesOnBoards[tileIndexX, tileIndexY - 1];
                                 cardConnector.tileBelow = connectedTile;
                                 cardConnector.tileBelow.haveCardConnector = true;
@@ -283,6 +323,11 @@ public class BoardManager : MonoBehaviour
                         case CardConnector.CardConnectorType.TopLeft:
                             if (tileIndexY + 1 < boardHeight)
                             {
+                                cardConnector.facing = CardConnector.Facing.VERTICAL;
+                                cardConnector.matchedSide = Card.MatchedSide.Left;
+                                cardConnector.parentMatchedSide = Card.MatchedSide.Left;
+                                cardConnector.parentCardPairingIndex = 0;
+                                cardConnector.droppedCardPairingIndex = 0;
                                 connectedTile = tilesOnBoards[tileIndexX, tileIndexY + 1];
                                 cardConnector.tileBelow = connectedTile;
                                 cardConnector.tileBelow.haveCardConnector = true;
@@ -312,6 +357,11 @@ public class BoardManager : MonoBehaviour
                         case CardConnector.CardConnectorType.Bottom:
                             if (tileIndexX + 1 < boardWidth)
                             {
+                                cardConnector.facing = CardConnector.Facing.HORIZONTAL;
+                                cardConnector.matchedSide = Card.MatchedSide.Left;
+                                cardConnector.parentMatchedSide = Card.MatchedSide.Right;
+                                cardConnector.parentCardPairingIndex = 1;
+                                cardConnector.droppedCardPairingIndex = 0;
                                 connectedTile = tilesOnBoards[tileIndexX + 1, tileIndexY];
                                 cardConnector.tileBelow = connectedTile;
                                 cardConnector.tileBelow.haveCardConnector = true;
@@ -330,6 +380,11 @@ public class BoardManager : MonoBehaviour
                         case CardConnector.CardConnectorType.BottomRight:
                             if (tileIndexY - 1 >= 0)
                             {
+                                cardConnector.facing = CardConnector.Facing.VERTICAL;
+                                cardConnector.matchedSide = Card.MatchedSide.Right;
+                                cardConnector.parentMatchedSide = Card.MatchedSide.Right;
+                                cardConnector.parentCardPairingIndex = 1;
+                                cardConnector.droppedCardPairingIndex = 1;
                                 connectedTile = tilesOnBoards[tileIndexX, tileIndexY - 1];
                                 cardConnector.tileBelow = connectedTile;
                                 cardConnector.tileBelow.haveCardConnector = true;
@@ -347,6 +402,12 @@ public class BoardManager : MonoBehaviour
                         case CardConnector.CardConnectorType.BottomLeft:
                             if (tileIndexY + 1 < boardHeight)
                             {
+                                cardConnector.facing = CardConnector.Facing.VERTICAL;
+                                cardConnector.matchedSide = Card.MatchedSide.Left;
+                                cardConnector.parentMatchedSide = Card.MatchedSide.Right;
+
+                                cardConnector.parentCardPairingIndex = 1;
+                                cardConnector.droppedCardPairingIndex = 0;
                                 connectedTile = tilesOnBoards[tileIndexX, tileIndexY + 1];
                                 cardConnector.tileBelow = connectedTile;
                                 cardConnector.tileBelow.haveCardConnector = true;
