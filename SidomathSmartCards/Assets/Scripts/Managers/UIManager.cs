@@ -20,6 +20,7 @@ public class UIManager : MonoBehaviour
 
     [Header("Buttons")]
     public Button pauseButton;
+    public Button reshuffleButton;
 
     [Header("Pause UI")]
     public Image pauseLayerBG;
@@ -60,6 +61,13 @@ public class UIManager : MonoBehaviour
         {
             Pause();
         });
+
+        //reshuffle button
+        reshuffleButton.onClick.RemoveAllListeners();
+        reshuffleButton.onClick.AddListener(() =>
+        {
+            ReshuffleCards();
+        });
     }
 
     public void RegisterPopups()
@@ -78,6 +86,7 @@ public class UIManager : MonoBehaviour
     private void OnDisable()
     {
         pauseButton.onClick.RemoveAllListeners();
+        reshuffleButton.onClick.RemoveAllListeners();
     }
 
 
@@ -91,6 +100,12 @@ public class UIManager : MonoBehaviour
             case GameplayManager.GameState.START_GAME:
                 OnStartGameplay();
                 break;
+            case GameplayManager.GameState.RESHUFFLE:
+                OnReshuffleCards();
+                break;
+            case GameplayManager.GameState.RESUME:
+                OnResumeGameplay();
+                break;
             default:
                 break;
         }
@@ -99,12 +114,27 @@ public class UIManager : MonoBehaviour
     public void InitUIGameplay()
     {
         actorTurnTMP.gameObject.SetActive(false);
+        pauseButton.interactable = false;
+        reshuffleButton.interactable = false;
     }
 
     public void OnStartGameplay()
     {
         pauseButton.interactable = true;
+        reshuffleButton.interactable = true;
         actorTurnTMP.gameObject.SetActive(true);
+    }
+
+    public void OnReshuffleCards()
+    {
+        pauseButton.interactable = false;
+        reshuffleButton.interactable = false;
+    }
+
+    public void OnResumeGameplay()
+    {
+        pauseButton.interactable = true;
+        reshuffleButton.interactable = true;
     }
 
     public void ChangeTurnUI()
@@ -127,6 +157,11 @@ public class UIManager : MonoBehaviour
         popup.StateController(popup.type, Popup.State.OPEN);
 
         GameplayManager.Instance.StateController(GameplayManager.GameState.PAUSE);
+    }
+
+    public void ReshuffleCards()
+    {
+        GameplayManager.Instance.StateController(GameplayManager.GameState.RESHUFFLE);
     }
 
 

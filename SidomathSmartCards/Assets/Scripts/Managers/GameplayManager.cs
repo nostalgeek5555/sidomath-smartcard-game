@@ -107,6 +107,8 @@ public class GameplayManager : MonoBehaviour
                 break;
             case GameState.RESUME:
                 break;
+            case GameState.RESHUFFLE:
+                break;
             default:
                 throw new ArgumentOutOfRangeException(nameof(_gameState), _gameState, null);
         }
@@ -129,7 +131,7 @@ public class GameplayManager : MonoBehaviour
                 HandleInitiation();
                 break;
             case GameState.START_GAME:
-                player.StateController(Player.PlayerState.GET_TURN);
+                HandleStartGame();
                 break;
             case GameState.SHIFT_TURN:
                 StartCoroutine(HandleShiftTurn());
@@ -145,6 +147,9 @@ public class GameplayManager : MonoBehaviour
             case GameState.RESUME:
                 HandleResume();
                 break;
+            case GameState.RESHUFFLE:
+                HandleReshuffle();
+                break;
             default:
                 throw new ArgumentOutOfRangeException(nameof(_gameState), _gameState, null);
         }
@@ -156,10 +161,15 @@ public class GameplayManager : MonoBehaviour
 
     public void HandleInitiation()
     {
-        UIManager.Instance.pauseButton.interactable = false;
         currentGameMode = DataManager.Instance.gameModeTable["Offline|SinglePlayer"];
         InitGameMode(currentGameMode);
         StartCoroutine(InitLevel(DataManager.Instance.levelTable["0|tupai"]));
+    }
+
+    public void HandleStartGame()
+    {
+        mainDecks.Clear();
+        player.StateController(Player.PlayerState.GET_TURN);
     }
 
     public IEnumerator HandleShiftTurn()
@@ -229,7 +239,16 @@ public class GameplayManager : MonoBehaviour
         Debug.Log("GAME OVER");
     }
 
- #region HANDLE_INITIATION
+    public void HandleReshuffle()
+    {
+        pause = true;
+        player.StateController(Player.PlayerState.PAUSE);
+
+        List<ActorBase> actors = new List<ActorBase>(allActors);
+        ReshuffleCards(actors, 0.15f);
+    }
+
+    #region HANDLE_INITIATION
     //first time load gameplay
     public void InitGameMode(ModeSO modeSO)
     {
@@ -342,7 +361,7 @@ public class GameplayManager : MonoBehaviour
         }
     }
 
-    public IEnumerator ShuffleDeck(Action<List<Card>, int, int> action, List<Card> decks)
+    public IEnumerator ShuffleDeck(Action<List<Card>, int, int> action = null, List<Card> decks = null)
     {
         int shuffledCount = 0;
         if (decks.Count > 0)
@@ -372,103 +391,200 @@ public class GameplayManager : MonoBehaviour
     public void DistributeCards(List<Card> cards, int cardID, int deckHolderID)
     {
         Debug.Log("distribute cards");
-        Card card = cards[cardID];
-
-        if (cardID < cards.Count - 1)
+        Card card;
+        
+        if (gameState != GameState.RESHUFFLE)
         {
-            Debug.Log($"total main card count {cards.Count}");
-            //distribute to each deck holder start from player
-            if (deckHolderID < deckHolders.Count)
+            card = cards[cardID];
+
+            if (cardID < cards.Count - 1)
             {
-                Debug.Log($"deck holder id == {deckHolderID}, deck holder count == {deckHolders.Count}");
-                Debug.Log($"card {card.gameObject.name}");
-                Debug.Log($"distribute card time {distributeCardTime}");
-
-                
-                //DOTween.ClearCachedTweens();
-                DOTween.To(setter: value =>
+                Debug.Log($"total main card count {cards.Count}");
+                //distribute to each deck holder start from player
+                if (deckHolderID < deckHolders.Count)
                 {
-                    Debug.Log(value);
-                    //seed.transform.position = Parabola(seed.transform.position, _target.transform.position, _height, value);
-                }, startValue: 0, endValue: 1, duration: distributeCardTime)
-                .SetEase(Ease.Linear);
+                    Debug.Log($"deck holder id == {deckHolderID}, deck holder count == {deckHolders.Count}");
+                    Debug.Log($"card {card.gameObject.name}");
+                    Debug.Log($"distribute card time {distributeCardTime}");
 
-                Sequence sequence = DOTween.Sequence();
-                sequence.Append(card.gameObject.transform.DOMove(deckHolders[deckHolderID].position, distributeCardTime));
-                sequence.AppendCallback(() =>
+                    Sequence sequence = DOTween.Sequence();
+                    sequence.Append(card.gameObject.transform.DOMove(deckHolders[deckHolderID].position, distributeCardTime));
+                    sequence.AppendCallback(() =>
+                    {
+                        card.gameObject.transform.SetParent(deckHolders[deckHolderID]);
+                        card._cardId = card.transform.GetSiblingIndex();
+                        cardID++;
+                        deckHolderID++;
+
+                        Debug.Log($"current card id :: {cardID}");
+                        DistributeCards(cards, cardID, deckHolderID);
+                    });
+                }
+
+                else
                 {
-                    card.gameObject.transform.SetParent(deckHolders[deckHolderID]);
-                    card._cardId = card.transform.GetSiblingIndex();
-                    cardID++;
-                    deckHolderID++;
+                    deckHolderID = 0;
 
-                    Debug.Log($"current card id :: {cardID}");
-                    DistributeCards(cards, cardID, deckHolderID);
-                });
+                    //DOTween.ClearCachedTweens();
+                    Sequence sequence = DOTween.Sequence();
+                    sequence.Append(card.gameObject.transform.DOMove(deckHolders[deckHolderID].position, distributeCardTime));
+                    sequence.AppendCallback(() =>
+                    {
+                        card.gameObject.transform.SetParent(deckHolders[deckHolderID]);
+                        card._cardId = card.transform.GetSiblingIndex();
+                        cardID++;
+                        deckHolderID++;
+
+                        Debug.Log($"current card id :: {cardID}");
+                        DistributeCards(cards, cardID, deckHolderID);
+                    });
+                }
             }
 
             else
             {
-                deckHolderID = 0;
+                //pick random tile on board and place last card from dealer deck as initiator
+                int randX = Random.Range(2, BoardManager.Instance.tilesOnBoards.GetLength(0) - 3);
+                int randY = Random.Range(2, BoardManager.Instance.tilesOnBoards.GetUpperBound(1) - 3);
+                Tile pickedTile = BoardManager.Instance.tilesOnBoards[randX, randY];
+                pickedTile.droppedCard = card;
+                pickedTile._placed = true;
+                pickedTile._droppable = false;
 
-                
-                //DOTween.ClearCachedTweens();
-                Sequence sequence = DOTween.Sequence();
-                sequence.Append(card.gameObject.transform.DOMove(deckHolders[deckHolderID].position, distributeCardTime));
-                sequence.AppendCallback(() =>
+                //pick random position on tiles
+                int randomPos = Random.Range(/*0, pickedTile.tilePoints.Count - 1*/0, 1);
+                Transform point = pickedTile.tilePoints[randomPos];
+
+                //spawn card on picked tile and drop last card from dealer deck as initiator
+                Card spawnedCard;
+                switch (randomPos)
                 {
-                    card.gameObject.transform.SetParent(deckHolders[deckHolderID]);
-                    card._cardId = card.transform.GetSiblingIndex();
-                    cardID++;
-                    deckHolderID++;
+                    case 0:
+                        spawnedCard = SpawnCardOnBoard(card, pickedTile, point, Tile.DroppedPoint.Top, Tile.TopBottomSpecific.Mid, null, null);
+                        MoveCardToBoard(card, spawnedCard, point, 0.6f, BoardManager.Instance.ResetDroppableAreas, SetupAllActors(), RemoveCard);
+                        break;
 
-                    Debug.Log($"current card id :: {cardID}");
-                    DistributeCards(cards, cardID, deckHolderID);
-                });
+                    case 1:
+                        spawnedCard = SpawnCardOnBoard(card, pickedTile, point, Tile.DroppedPoint.Bottom, Tile.TopBottomSpecific.Mid, null, null);
+                        MoveCardToBoard(card, spawnedCard, point, 0.6f, BoardManager.Instance.ResetDroppableAreas, SetupAllActors(), RemoveCard);
+                        break;
+
+                    case 2:
+                        spawnedCard = SpawnCardOnBoard(card, pickedTile, point, Tile.DroppedPoint.Right, Tile.TopBottomSpecific.Mid, null, null);
+                        MoveCardToBoard(card, spawnedCard, point, 0.6f, BoardManager.Instance.ResetDroppableAreas, SetupAllActors(), RemoveCard);
+                        break;
+
+                    case 3:
+                        spawnedCard = SpawnCardOnBoard(card, pickedTile, point, Tile.DroppedPoint.Left, Tile.TopBottomSpecific.Mid, null, null);
+                        MoveCardToBoard(card, spawnedCard, point, 0.6f, BoardManager.Instance.ResetDroppableAreas, SetupAllActors(), RemoveCard);
+                        break;
+
+                    default:
+                        break;
+                }
+
             }
         }
 
         else
         {
-            //pick random tile on board and place last card from dealer deck as initiator
-            int randX = Random.Range(2, BoardManager.Instance.tilesOnBoards.GetLength(0) - 3);
-            int randY = Random.Range(2, BoardManager.Instance.tilesOnBoards.GetUpperBound(1) - 3);
-            Tile pickedTile = BoardManager.Instance.tilesOnBoards[randX, randY];
-            pickedTile.droppedCard = card;
-            pickedTile._placed = true;
-            pickedTile._droppable = false;
-
-            //pick random position on tiles
-            int randomPos = Random.Range(/*0, pickedTile.tilePoints.Count - 1*/0,1);
-            Transform point = pickedTile.tilePoints[randomPos];
-
-            //spawn card on picked tile and drop last card from dealer deck as initiator
-            Card spawnedCard;
-            switch (randomPos)
+            Debug.Log($"current card id {cardID} && card count {cards.Count}");
+            if (cardID < cards.Count)
             {
-                case 0:
-                    spawnedCard = SpawnCardOnBoard(card, pickedTile, point, Tile.DroppedPoint.Top, Tile.TopBottomSpecific.Mid, null, null);
-                    MoveCardToBoard(card, spawnedCard, point, 0.6f, BoardManager.Instance.ResetDroppableAreas, SetupAllActors(), RemoveCard);
-                    break;
+                card = cards[cardID];
+                card.overrideCanvas.enabled = true;
+                card.overrideCanvas.sortingOrder = 0;
 
-                case 1:
-                    spawnedCard = SpawnCardOnBoard(card, pickedTile, point, Tile.DroppedPoint.Bottom, Tile.TopBottomSpecific.Mid, null, null);
-                    MoveCardToBoard(card, spawnedCard, point, 0.6f, BoardManager.Instance.ResetDroppableAreas, SetupAllActors(), RemoveCard);
-                    break;
+                Debug.Log($"total main card count {cards.Count}");
+                //distribute to each deck holder start from player
+                if (deckHolderID < deckHolders.Count)
+                {
+                    Debug.Log($"deck holder id == {deckHolderID}, deck holder count == {deckHolders.Count}");
+                    Debug.Log($"card {card.gameObject.name}");
+                    Debug.Log($"distribute card time {distributeCardTime}");
 
-                case 2:
-                    spawnedCard = SpawnCardOnBoard(card, pickedTile, point, Tile.DroppedPoint.Right, Tile.TopBottomSpecific.Mid, null, null);
-                    MoveCardToBoard(card, spawnedCard, point, 0.6f, BoardManager.Instance.ResetDroppableAreas, SetupAllActors(), RemoveCard);
-                    break;
+                    Sequence sequence = DOTween.Sequence();
+                    sequence.Append(card.gameObject.transform.DOMove(deckHolders[deckHolderID].position, distributeCardTime));
+                    sequence.AppendCallback(() =>
+                    {
+                        card.gameObject.transform.SetParent(deckHolders[deckHolderID]);
+                        card._cardId = card.transform.GetSiblingIndex();
+                        cardID++;
+                        deckHolderID++;
 
-                case 3:
-                    spawnedCard = SpawnCardOnBoard(card, pickedTile, point, Tile.DroppedPoint.Left, Tile.TopBottomSpecific.Mid, null, null);
-                    MoveCardToBoard(card, spawnedCard, point, 0.6f, BoardManager.Instance.ResetDroppableAreas, SetupAllActors(), RemoveCard);
-                    break;
+                        Debug.Log($"current card id :: {cardID}");
+                        DistributeCards(cards, cardID, deckHolderID);
+                    });
+                }
 
-                default:
-                    break;
+                else
+                {
+                    deckHolderID = 0;
+
+                    Sequence sequence = DOTween.Sequence();
+                    sequence.Append(card.gameObject.transform.DOMove(deckHolders[deckHolderID].position, distributeCardTime));
+                    sequence.AppendCallback(() =>
+                    {
+                        card.gameObject.transform.SetParent(deckHolders[deckHolderID]);
+                        card._cardId = card.transform.GetSiblingIndex();
+                        cardID++;
+                        deckHolderID++;
+
+                        Debug.Log($"current card id :: {cardID}");
+                        DistributeCards(cards, cardID, deckHolderID);
+                    });
+                }
             }
+
+            else
+            {
+                Debug.Log("done reshuffling all cards");
+                //StateController(GameState.RESUME);
+                StartCoroutine(SetupAllActors());
+            }
+        }
+    }
+
+    
+
+    public void ReshuffleCards(List<ActorBase> actors, float distributeCardTime)
+    {
+        ActorBase actor;
+
+        if (actors.Count > 0)
+        {
+            actor = actors[Random.Range(0, actors.Count)];
+
+            if (actor.handCards.Count > 0)
+            {
+                Card card = actor.handCards[Random.Range(0, actor.handCards.Count)];
+
+                Sequence sequence = DOTween.Sequence();
+                sequence.Append(card.gameObject.transform.DOMove(dealerDeckHolder.position, distributeCardTime));
+                sequence.AppendCallback(() =>
+                {
+                    card.gameObject.transform.SetParent(dealerDeckHolder);
+                    mainDecks.Add(card);
+                    actor.handCards.Remove(card);
+
+                    ReshuffleCards(actors, distributeCardTime);
+                });
+            }
+
+            else
+            {
+                actors.Remove(actor);
+                ReshuffleCards(actors, distributeCardTime);
+            }
+        }
+
+
+
+        else
+        {
+            Debug.Log($"start reshuffling all cards");
+            player.StateController(Player.PlayerState.RESHUFFLE);
+            StartCoroutine(ShuffleDeck(DistributeCards, mainDecks));
         }
     }
     #endregion
@@ -660,6 +776,7 @@ public class GameplayManager : MonoBehaviour
         WIN = 4,
         GAME_OVER = 5,
         PAUSE = 6,
-        RESUME = 7
+        RESUME = 7,
+        RESHUFFLE = 8
     }
 }

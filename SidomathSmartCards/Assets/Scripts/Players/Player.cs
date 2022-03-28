@@ -85,6 +85,9 @@ public class Player : ActorBase
             case PlayerState.RESUME:
                 HandleResume();
                 break;
+            case PlayerState.RESHUFFLE:
+                HandleOnReshuffle();
+                break;
             default:
                 break;
         }
@@ -183,13 +186,16 @@ public class Player : ActorBase
         playerState = PlayerState.GET_TURN;
         GameplayManager.Instance.actorGettingTurn = GetComponent<ActorBase>();
 
+        pickedCard = null;
         turn = true;
         skipButton.enabled = true;
-
+        
         foreach (Card card in handCards)
         {
             card.canBePick = true;
             card.draggable = true;
+            card.overrideCanvas.enabled = true;
+            card.overrideCanvas.sortingOrder = 0;
         }
         
 
@@ -267,16 +273,26 @@ public class Player : ActorBase
 
     private void HandleResume()
     {
-        pickedCard.overrideCanvas.enabled = true;
-        pickedCard.overrideCanvas.sortingOrder = 1;
+        if (pickedCard != null)
+        {
+            pickedCard.overrideCanvas.enabled = true;
+            pickedCard.overrideCanvas.sortingOrder = 1;
+            pickedCard.cardHighlight.SetActive(true);
+        }
+        
         skipButton.enabled = true;
+
         foreach (Card card in handCards)
         {
             card.canBePick = true;
             card.draggable = true;
         }
+    }
 
-        pickedCard.cardHighlight.SetActive(true);
+    private void HandleOnReshuffle()
+    {
+        handCardFitter.enabled = true;
+        handCardGroup.enabled = true;
     }
 
 
@@ -296,6 +312,7 @@ public class Player : ActorBase
         WIN = 4,
         GAME_OVER = 5,
         PAUSE = 6,
-        RESUME = 7
+        RESUME = 7,
+        RESHUFFLE = 8
     }
 }

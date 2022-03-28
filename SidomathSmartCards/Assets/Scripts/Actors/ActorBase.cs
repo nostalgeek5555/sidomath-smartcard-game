@@ -35,6 +35,11 @@ public class ActorBase : MonoBehaviour
                     {
                         card.player = gameObject.GetComponent<Player>();
                     }
+
+                    else
+                    {
+                        card.player = null;
+                    }
                     handCards.Add(card);
                     Debug.Log($"card added id :: {card._cardId}");
                     Debug.Log($"card added pair :: {card._cardPairType}");

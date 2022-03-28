@@ -108,38 +108,44 @@ public class Card : MonoBehaviour, IDragHandler, IBeginDragHandler, IEndDragHand
 
     public void OnBeginDrag(PointerEventData eventData)
     {
-        if (player.playerState == Player.PlayerState.GET_TURN && draggable)
+        if (player != null)
         {
-            pointerEventData = eventData;
-            collider2D.enabled = true;
-            player.handCardFitter.enabled = false;
-            player.handCardGroup.enabled = false;
-            canvasGroup.blocksRaycasts = false;
-            canvasGroup.alpha = 0.6f;
-            transform.localScale = new Vector3(0.7f, 0.7f, 0.7f);
-            player.PickCard(this);
-            Debug.Log($"Begin to drag card with id :: {cardId} & pair type {cardPairType}");
+            if (player.playerState == Player.PlayerState.GET_TURN && draggable)
+            {
+                pointerEventData = eventData;
+                collider2D.enabled = true;
+                player.handCardFitter.enabled = false;
+                player.handCardGroup.enabled = false;
+                canvasGroup.blocksRaycasts = false;
+                canvasGroup.alpha = 0.6f;
+                transform.localScale = new Vector3(0.7f, 0.7f, 0.7f);
+                player.PickCard(this);
+                Debug.Log($"Begin to drag card with id :: {cardId} & pair type {cardPairType}");
+            }
         }
     }
 
     public void OnDrag(PointerEventData eventData)
     {
-        if (player.playerState == Player.PlayerState.GET_TURN && cardType == CardType.OnHand)
+        if (player != null)
         {
-            Vector3 screenCenter = new Vector3(Screen.width * 0.5f, Screen.height * 0.5f, -Camera.main.transform.position.z);
-            Vector3 screenTouch = screenCenter + new Vector3(eventData.delta.x, eventData.delta.y, 0);
+            if (player.playerState == Player.PlayerState.GET_TURN && cardType == CardType.OnHand)
+            {
+                Vector3 screenCenter = new Vector3(Screen.width * 0.5f, Screen.height * 0.5f, -Camera.main.transform.position.z);
+                Vector3 screenTouch = screenCenter + new Vector3(eventData.delta.x, eventData.delta.y, 0);
 
-            Vector3 worldCenterPosition = Camera.main.ScreenToWorldPoint(screenCenter);
-            Vector3 worldTouchPosition = Camera.main.ScreenToWorldPoint(screenTouch);
+                Vector3 worldCenterPosition = Camera.main.ScreenToWorldPoint(screenCenter);
+                Vector3 worldTouchPosition = Camera.main.ScreenToWorldPoint(screenTouch);
 
-            Vector3 delta = worldTouchPosition - worldCenterPosition;
+                Vector3 delta = worldTouchPosition - worldCenterPosition;
 
-            transform.position += delta;
-        }
+                transform.position += delta;
+            }
 
-        else
-        {
-            throw new Exception();
+            else
+            {
+                throw new Exception();
+            }
         }
     }
 
@@ -212,35 +218,37 @@ public class Card : MonoBehaviour, IDragHandler, IBeginDragHandler, IEndDragHand
 
     public void OnEndDrag(PointerEventData eventData)
     {
-        canvasGroup.blocksRaycasts = true;
-
-        Debug.Log("on drop this card");
-        if (currentCardConnector == null)
+        if (player != null)
         {
-            TweenBack(GameplayManager.Instance.player.OnCardFinishTweenBack);
-        }
+            canvasGroup.blocksRaycasts = true;
 
-        else
-        {
-            if (insideCardConnector)
+            if (currentCardConnector == null)
             {
-                if (!currentCardConnector.CheckIfConnectedCardFlipped())
-                {
-                    Card parentCard = currentCardConnector.transform.parent.parent.parent.GetComponent<Card>();
-                    BoardManager.Instance.OnDropCard(this, parentCard, currentCardConnector);
-                    Debug.Log("Dropped on valid card connector");
-                }
-
-                else
-                {
-                    Debug.Log("on card flipped tween back card");
-                    TweenBack(GameplayManager.Instance.player.OnCardFinishTweenBack);
-                }
+                TweenBack(GameplayManager.Instance.player.OnCardFinishTweenBack);
             }
 
             else
             {
-                TweenBack(GameplayManager.Instance.player.OnCardFinishTweenBack);
+                if (insideCardConnector)
+                {
+                    if (!currentCardConnector.CheckIfConnectedCardFlipped())
+                    {
+                        Card parentCard = currentCardConnector.transform.parent.parent.parent.GetComponent<Card>();
+                        BoardManager.Instance.OnDropCard(this, parentCard, currentCardConnector);
+                        Debug.Log("Dropped on valid card connector");
+                    }
+
+                    else
+                    {
+                        Debug.Log("on card flipped tween back card");
+                        TweenBack(GameplayManager.Instance.player.OnCardFinishTweenBack);
+                    }
+                }
+
+                else
+                {
+                    TweenBack(GameplayManager.Instance.player.OnCardFinishTweenBack);
+                }
             }
         }
     }

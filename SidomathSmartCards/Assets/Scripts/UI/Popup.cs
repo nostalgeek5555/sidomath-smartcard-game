@@ -85,17 +85,17 @@ public class Popup : MonoBehaviour
 
         closeButton.onClick.RemoveAllListeners();
 
-        //if (buttonHolder.childCount > 0)
-        //{
-        //    for (int i = buttonHolder.childCount - 1; i >= 0; i--)
-        //    {
-        //        ButtonExtender button = buttonHolder.GetChild(i).GetComponent<ButtonExtender>();
-        //        button.onClick.RemoveAllListeners();
+        if (buttonHolder.childCount > 0)
+        {
+            for (int i = buttonHolder.childCount - 1; i >= 0; i--)
+            {
+                ButtonExtender button = buttonHolder.GetChild(i).GetComponent<ButtonExtender>();
+                button.onClick.RemoveAllListeners();
 
-        //        Debug.Log($"despawned button {button.buttonMethodName}");
-        //        LeanPool.Despawn(button);
-        //    }
-        //}
+                Debug.Log($"despawned button {button.buttonMethodName}");
+                LeanPool.Despawn(button);
+            }
+        }
     }
 
 
